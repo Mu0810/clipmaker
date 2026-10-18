@@ -1,0 +1,1321 @@
+{
+ "captured": "16 Oct 2026, from the /api/schedule routes and scheduler.py before task 9.5 (tests/_capture_schedule_api.py, kept in .attic)",
+ "single": [
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "First clip",
+     "description": "Desc one",
+     "tags": [
+      "a",
+      "b"
+     ],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000100.0
+    },
+    "name": "yt1"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "First clip",
+     "description": "Desc one",
+     "tags": [
+      "a",
+      "b"
+     ],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000100.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "instagram",
+     "title": "Reel title",
+     "description": "Reel desc",
+     "scheduled_at": 1900000200.0
+    },
+    "name": "ig1"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "instagram",
+     "title": "Reel title",
+     "description": "Reel desc",
+     "tags": [],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000200.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Second clip",
+     "privacy": "public",
+     "scheduled_at": 1900000300.0
+    },
+    "name": "yt2"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Second clip",
+     "description": "",
+     "tags": [],
+     "privacy": "public",
+     "scheduled_at": 1900000300.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Third clip",
+     "scheduled_at": 1900000400.0
+    },
+    "name": "yt3"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Third clip",
+     "description": "",
+     "tags": [],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000400.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "02-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Fourth clip",
+     "scheduled_at": 1900000500.0
+    },
+    "name": "yt4"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "02-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Fourth clip",
+     "description": "",
+     "tags": [],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000500.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Later clip",
+     "tags": [
+      "x"
+     ],
+     "scheduled_at": 1900100000.0
+    },
+    "name": "yt5"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Later clip",
+     "description": "",
+     "tags": [
+      "x"
+     ],
+     "privacy": "unlisted",
+     "scheduled_at": 1900100000.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Sixth clip",
+     "scheduled_at": 1900000600.0
+    },
+    "name": "yt6"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Sixth clip",
+     "description": "",
+     "tags": [],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000600.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": null
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": [
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "First clip",
+       "description": "Desc one",
+       "tags": [
+        "a",
+        "b"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000100.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "instagram",
+       "title": "Reel title",
+       "description": "Reel desc",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000200.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Second clip",
+       "description": "",
+       "tags": [],
+       "privacy": "public",
+       "scheduled_at": 1900000300.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Third clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000400.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "02-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Fourth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000500.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Sixth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000600.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Later clip",
+       "description": "",
+       "tags": [
+        "x"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900100000.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      }
+     ]
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "tiktok",
+     "title": "x",
+     "scheduled_at": 1900000000.0
+    }
+   },
+   "result": {
+    "status": 400,
+    "body": {
+     "detail": "platform must be 'youtube' or 'instagram'."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "   ",
+     "scheduled_at": 1900000000.0
+    }
+   },
+   "result": {
+    "status": 400,
+    "body": {
+     "detail": "A title is required."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "nope.mp4",
+     "platform": "youtube",
+     "title": "x",
+     "scheduled_at": 1900000000.0
+    }
+   },
+   "result": {
+    "status": 404,
+    "body": {
+     "detail": "Clip not found."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "../../clipmaker.db",
+     "platform": "youtube",
+     "title": "x",
+     "scheduled_at": 1900000000.0
+    }
+   },
+   "result": {
+    "status": 404,
+    "body": {
+     "detail": "Clip not found."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "ffffffffffff",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "x",
+     "scheduled_at": 1900000000.0
+    }
+   },
+   "result": {
+    "status": 404,
+    "body": {
+     "detail": "Clip not found."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "c0ffee000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "x"
+    }
+   },
+   "result": {
+    "status": 422,
+    "body": {
+     "detail": [
+      {
+       "type": "missing",
+       "loc": [
+        "body",
+        "scheduled_at"
+       ],
+       "msg": "Field required",
+       "input": {
+        "job_id": "c0ffee000001",
+        "file": "01-clip-vertical.mp4",
+        "platform": "youtube",
+        "title": "x"
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "run",
+    "at": 1900000250.0,
+    "browser": false
+   },
+   "result": {
+    "calls": [
+     [
+      "instagram_upload.upload_reel",
+      "01-clip-vertical.mp4",
+      {
+       "caption": "Reel title\n\nReel desc"
+      }
+     ],
+     [
+      "youtube_upload.upload_video",
+      "01-clip-vertical.mp4",
+      {
+       "title": "First clip",
+       "description": "Desc one",
+       "tags": [
+        "a",
+        "b"
+       ],
+       "privacy": "unlisted"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "step": {
+    "do": "run",
+    "at": 1900000350.0,
+    "browser": true
+   },
+   "result": {
+    "calls": [
+     [
+      "youtube_pw.upload_video",
+      "01-clip-vertical.mp4",
+      {
+       "title": "Second clip",
+       "description": "",
+       "tags": [],
+       "privacy": "public"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "step": {
+    "do": "run",
+    "at": 1900000450.0,
+    "browser": false,
+    "fail": "Upload failed: quota exceeded"
+   },
+   "result": {
+    "calls": [
+     [
+      "youtube_upload.upload_video",
+      "01-clip-vertical.mp4",
+      {
+       "title": "Third clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "step": {
+    "do": "remove_file",
+    "file": "02-clip-vertical.mp4"
+   },
+   "result": {}
+  },
+  {
+   "step": {
+    "do": "run",
+    "at": 1900000550.0,
+    "browser": false
+   },
+   "result": {
+    "calls": []
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": [
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "First clip",
+       "description": "Desc one",
+       "tags": [
+        "a",
+        "b"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000100.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/api1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "instagram",
+       "title": "Reel title",
+       "description": "Reel desc",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000200.0,
+       "status": "done",
+       "error": "",
+       "url": "https://www.instagram.com/reel/R1/",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Second clip",
+       "description": "",
+       "tags": [],
+       "privacy": "public",
+       "scheduled_at": 1900000300.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/pw1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Third clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000400.0,
+       "status": "error",
+       "error": "Upload failed: quota exceeded",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "02-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Fourth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000500.0,
+       "status": "error",
+       "error": "Clip file not found.",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Sixth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000600.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Later clip",
+       "description": "",
+       "tags": [
+        "x"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900100000.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      }
+     ]
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "crash",
+    "at": 1900000650.0
+   },
+   "result": {
+    "calls": [
+     [
+      "youtube_upload.upload_video",
+      "01-clip-vertical.mp4",
+      {
+       "title": "Sixth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": [
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "First clip",
+       "description": "Desc one",
+       "tags": [
+        "a",
+        "b"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000100.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/api1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "instagram",
+       "title": "Reel title",
+       "description": "Reel desc",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000200.0,
+       "status": "done",
+       "error": "",
+       "url": "https://www.instagram.com/reel/R1/",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Second clip",
+       "description": "",
+       "tags": [],
+       "privacy": "public",
+       "scheduled_at": 1900000300.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/pw1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Third clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000400.0,
+       "status": "error",
+       "error": "Upload failed: quota exceeded",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "02-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Fourth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000500.0,
+       "status": "error",
+       "error": "Clip file not found.",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Sixth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000600.0,
+       "status": "uploading",
+       "error": "",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Later clip",
+       "description": "",
+       "tags": [
+        "x"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900100000.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      }
+     ]
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "restart",
+    "at": 1900000711.0
+   },
+   "result": {}
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": [
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "First clip",
+       "description": "Desc one",
+       "tags": [
+        "a",
+        "b"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000100.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/api1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "instagram",
+       "title": "Reel title",
+       "description": "Reel desc",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000200.0,
+       "status": "done",
+       "error": "",
+       "url": "https://www.instagram.com/reel/R1/",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Second clip",
+       "description": "",
+       "tags": [],
+       "privacy": "public",
+       "scheduled_at": 1900000300.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/pw1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Third clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000400.0,
+       "status": "error",
+       "error": "Upload failed: quota exceeded",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "02-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Fourth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000500.0,
+       "status": "error",
+       "error": "Clip file not found.",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Sixth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000600.0,
+       "status": "error",
+       "error": "Interrupted by a restart — please re-schedule.",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Later clip",
+       "description": "",
+       "tags": [
+        "x"
+       ],
+       "privacy": "unlisted",
+       "scheduled_at": 1900100000.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": null
+      }
+     ]
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "DELETE",
+    "path": "/api/schedule/{yt5}"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "DELETE",
+    "path": "/api/schedule/{yt5}"
+   },
+   "result": {
+    "status": 404,
+    "body": {
+     "detail": "Not found."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "DELETE",
+    "path": "/api/schedule/{yt1}"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": [
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "instagram",
+       "title": "Reel title",
+       "description": "Reel desc",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000200.0,
+       "status": "done",
+       "error": "",
+       "url": "https://www.instagram.com/reel/R1/",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Second clip",
+       "description": "",
+       "tags": [],
+       "privacy": "public",
+       "scheduled_at": 1900000300.0,
+       "status": "done",
+       "error": "",
+       "url": "https://youtu.be/pw1",
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Third clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000400.0,
+       "status": "error",
+       "error": "Upload failed: quota exceeded",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "02-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Fourth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000500.0,
+       "status": "error",
+       "error": "Clip file not found.",
+       "url": null,
+       "user_id": null
+      },
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "c0ffee000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Sixth clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000600.0,
+       "status": "error",
+       "error": "Interrupted by a restart — please re-schedule.",
+       "url": null,
+       "user_id": null
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "multi": [
+  {
+   "step": {
+    "do": "http",
+    "as": "alice",
+    "method": "POST",
+    "path": "/api/schedule",
+    "name": "a1",
+    "body": {
+     "job_id": "a1ce00000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Alice's clip",
+     "scheduled_at": 1900000100.0
+    }
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "id": "<id>",
+     "created_at": "<time>",
+     "job_id": "a1ce00000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Alice's clip",
+     "description": "",
+     "tags": [],
+     "privacy": "unlisted",
+     "scheduled_at": 1900000100.0,
+     "status": "pending",
+     "error": null,
+     "url": null,
+     "user_id": "<alice>"
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "as": "bob",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": []
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "as": "bob",
+    "method": "POST",
+    "path": "/api/schedule",
+    "body": {
+     "job_id": "a1ce00000001",
+     "file": "01-clip-vertical.mp4",
+     "platform": "youtube",
+     "title": "Bob's try",
+     "scheduled_at": 1900000100.0
+    }
+   },
+   "result": {
+    "status": 404,
+    "body": {
+     "detail": "Not found."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "as": "bob",
+    "method": "DELETE",
+    "path": "/api/schedule/{a1}"
+   },
+   "result": {
+    "status": 404,
+    "body": {
+     "detail": "Not found."
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "as": "alice",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": [
+      {
+       "id": "<id>",
+       "created_at": "<time>",
+       "job_id": "a1ce00000001",
+       "file": "01-clip-vertical.mp4",
+       "platform": "youtube",
+       "title": "Alice's clip",
+       "description": "",
+       "tags": [],
+       "privacy": "unlisted",
+       "scheduled_at": 1900000100.0,
+       "status": "pending",
+       "error": null,
+       "url": null,
+       "user_id": "<alice>"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "as": "alice",
+    "method": "DELETE",
+    "path": "/api/schedule/{a1}"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "step": {
+    "do": "http",
+    "as": "alice",
+    "method": "GET",
+    "path": "/api/schedule"
+   },
+   "result": {
+    "status": 200,
+    "body": {
+     "now": "<time>",
+     "schedules": []
+    }
+   }
+  }
+ ]
+}

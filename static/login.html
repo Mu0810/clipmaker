@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clip Maker — sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070710; --surface:#12121f; --surface-2:#0c0c17;
+    --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.14);
+    --fg:#F4F5FB; --muted:#9CA2B8; --muted-2:#646A82;
+    --primary:#EC4899; --danger:#FB7185; --ok:#34D399;
+    --grad:linear-gradient(120deg,#EC4899,#A855F7 52%,#6366F1);
+    --ring:0 0 0 3px rgba(236,72,153,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:24px;color:var(--fg);
+    font:15px/1.55 'Inter',-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1100px 520px at 85% -10%, rgba(236,72,153,.16), transparent 58%),
+      radial-gradient(900px 520px at -5% -5%, rgba(99,102,241,.16), transparent 55%),
+      var(--bg);}
+  .card{width:100%;max-width:400px;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 40%),var(--surface);
+    border:1px solid var(--line-strong);border-radius:18px;padding:28px;box-shadow:0 30px 80px -28px rgba(0,0,0,.8)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;margin-bottom:20px}
+  .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--grad);color:#fff;
+    box-shadow:0 8px 20px -6px rgba(236,72,153,.7)}
+  .logo svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  h1{font-size:22px;margin:0 0 4px;letter-spacing:-.02em}
+  .sub{margin:0 0 20px;color:var(--muted);font-size:14px}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:14px 0 7px}
+  input{width:100%;background:var(--surface-2);color:var(--fg);border:1px solid var(--line-strong);
+    border-radius:11px;padding:12px 13px;font:inherit;font-size:14px}
+  input:focus{outline:none;border-color:var(--primary);box-shadow:var(--ring)}
+  .btn{width:100%;margin-top:20px;border:none;border-radius:11px;padding:13px;cursor:pointer;color:#fff;
+    font:inherit;font-size:15px;font-weight:700;background:var(--grad);background-size:140% 140%;
+    transition:background-position .4s,transform .1s;box-shadow:0 10px 26px -10px rgba(236,72,153,.7)}
+  .btn:hover{background-position:100% 0}
+  .btn:active{transform:translateY(1px)}
+  .btn[disabled]{opacity:.6;cursor:not-allowed}
+  .err{color:var(--danger);font-size:12.5px;min-height:16px;margin-top:10px;word-break:break-word}
+  .switch{margin-top:18px;font-size:13px;color:var(--muted);text-align:center}
+  .link{background:none;border:none;color:#C4B5FD;font:inherit;font-weight:600;cursor:pointer;padding:0}
+  .link:hover{text-decoration:underline}
+
+  /* ── animation layer ── */
+  @keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(.95)}to{opacity:1;transform:none}}
+  @keyframes riseSm{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes glowPulse{0%,100%{box-shadow:0 8px 20px -6px rgba(236,72,153,.7)}50%{box-shadow:0 8px 28px -4px rgba(168,85,247,.9)}}
+  @keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(-60px,50px) scale(1.15)}}
+  @keyframes drift2{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,-40px) scale(1.1)}}
+  @keyframes shine{from{left:-80%}to{left:130%}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+  body::before,body::after{content:"";position:fixed;z-index:0;border-radius:50%;
+    filter:blur(80px);pointer-events:none}
+  body::before{width:480px;height:480px;top:-140px;right:-110px;
+    background:radial-gradient(circle,rgba(236,72,153,.22),transparent 65%);
+    animation:drift1 22s ease-in-out infinite alternate}
+  body::after{width:420px;height:420px;bottom:-130px;left:-110px;
+    background:radial-gradient(circle,rgba(99,102,241,.22),transparent 65%);
+    animation:drift2 28s ease-in-out infinite alternate}
+
+  .card{position:relative;z-index:1;
+    animation:cardIn .6s cubic-bezier(.2,.8,.3,1) both}
+  .brand{animation:riseSm .5s .10s cubic-bezier(.2,.8,.3,1) backwards}
+  h1{animation:riseSm .5s .18s cubic-bezier(.2,.8,.3,1) backwards}
+  .sub{animation:riseSm .5s .24s cubic-bezier(.2,.8,.3,1) backwards}
+  label,input{animation:riseSm .5s .30s cubic-bezier(.2,.8,.3,1) backwards}
+  .btn,.switch{animation:riseSm .5s .38s cubic-bezier(.2,.8,.3,1) backwards}
+  .logo{animation:floaty 4.5s ease-in-out infinite,glowPulse 3s ease-in-out infinite}
+  input{transition:border-color .2s,box-shadow .25s}
+  .btn{position:relative;overflow:hidden;
+    transition:background-position .4s,box-shadow .3s,
+      transform .25s cubic-bezier(.34,1.56,.64,1)}
+  .btn::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;
+    background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);
+    transform:skewX(-20deg);pointer-events:none}
+  .btn:hover{transform:translateY(-2px);
+    box-shadow:0 14px 34px -10px rgba(236,72,153,.85)}
+  .btn:hover::after{animation:shine .8s ease}
+  .btn:active{transform:translateY(0) scale(.97)}
+  .btn[disabled]:hover{transform:none}
+  .err:not(:empty){animation:shake .4s ease}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></span>
+      Clip Maker
+    </div>
+    <h1 id="title">Welcome back</h1>
+    <p class="sub" id="sub">Sign in to continue.</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="you@example.com" />
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+    <div id="err" class="err"></div>
+    <button id="go" class="btn">Sign in</button>
+    <div class="switch"><span id="switchText">New here?</span>
+      <button id="switchBtn" class="link" type="button">Create an account</button></div>
+  </div>
+<script>
+  const $ = s => document.querySelector(s);
+  // Signing in only works when this page is served by the app itself —
+  // opened as a local file it has no origin, so API calls and the session
+  // cookie can't work. Point the user at the server instead.
+  const SERVED = /^https?:$/.test(location.protocol);
+  const SERVER_HINT = 'This page only works when opened through the app — go to http://localhost:8000 in your browser.';
+  if (!SERVED) window.addEventListener('DOMContentLoaded',
+    () => { $('#err').textContent = SERVER_HINT; });
+  let mode = 'login';
+  function setMode(m){
+    mode = m;
+    $('#title').textContent = m === 'login' ? 'Welcome back' : 'Create your account';
+    $('#sub').textContent = m === 'login' ? 'Sign in to continue.' : 'Sign up to start making clips.';
+    $('#go').textContent = m === 'login' ? 'Sign in' : 'Sign up';
+    $('#password').setAttribute('autocomplete', m === 'login' ? 'current-password' : 'new-password');
+    $('#switchText').textContent = m === 'login' ? 'New here?' : 'Already have an account?';
+    $('#switchBtn').textContent = m === 'login' ? 'Create an account' : 'Sign in';
+    $('#err').textContent = '';
+  }
+  $('#switchBtn').onclick = () => setMode(mode === 'login' ? 'signup' : 'login');
+  async function submit(){
+    const email = $('#email').value.trim(), password = $('#password').value;
+    const err = $('#err'); err.textContent = '';
+    if (!SERVED){ err.textContent = SERVER_HINT; return; }
+    if (!email || !password){ err.textContent = 'Enter your email and password.'; return; }
+    const go = $('#go'); go.disabled = true; const label = go.textContent; go.textContent = '…';
+    try {
+      const r = await fetch('/api/auth/' + (mode === 'login' ? 'login' : 'signup'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.detail || 'Something went wrong');
+      location.href = '/';
+    } catch (e) { err.textContent = e.message; go.disabled = false; go.textContent = label; }
+  }
+  $('#go').onclick = submit;
+  ['email', 'password'].forEach(id => $('#' + id).addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
+</script>
+</body>
+</html>

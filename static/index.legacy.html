@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clip Maker — turn long videos into shorts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F172A; --bg-2:#0B1120; --surface:#131A2B; --surface-2:#0E1626;
+    --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.14);
+    --fg:#F8FAFC; --muted:#94A3B8; --muted-2:#64748B;
+    --primary:#EC4899; --primary-press:#DB2777;
+    --accent:#2563EB; --accent-press:#1D4ED8;
+    --ok:#34D399; --warn:#FBBF24; --danger:#F87171;
+    --radius:14px; --radius-sm:10px;
+    --shadow:0 10px 30px -12px rgba(0,0,0,.6);
+    --ring:0 0 0 3px rgba(236,72,153,.35);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:
+      radial-gradient(1100px 500px at 80% -10%, rgba(236,72,153,.10), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(37,99,235,.10), transparent 55%),
+      var(--bg);
+    color:var(--fg);
+    font:15px/1.55 'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+  }
+  a{color:inherit}
+  svg{display:block}
+  .icon{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;
+        stroke-linecap:round;stroke-linejoin:round}
+  .icon-sm{width:15px;height:15px}
+
+  /* ── top bar ─────────────────────────────────────────── */
+  .topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(12px);
+    background:rgba(11,17,32,.72);border-bottom:1px solid var(--line)}
+  .topbar-in{max-width:1100px;margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;gap:14px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;
+    font-size:16px;letter-spacing:-.01em}
+  .logo{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--primary),#9333EA);color:#fff;
+    box-shadow:0 6px 18px -6px rgba(236,72,153,.7)}
+  .spacer{flex:1}
+
+  /* account chip */
+  .chip{display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+    border:1px solid var(--line-strong);background:var(--surface);
+    color:var(--fg);border-radius:999px;padding:6px 12px 6px 7px;
+    font-size:13px;font-weight:500;transition:border-color .18s,background .18s}
+  .chip:hover{border-color:var(--primary);background:#18203400}
+  .chip:focus-visible{outline:none;box-shadow:var(--ring)}
+  .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--muted-2);
+    box-shadow:0 0 0 3px rgba(148,163,184,.18)}
+  .chip.live .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(52,211,153,.2)}
+  .chip .av{width:24px;height:24px;border-radius:50%;object-fit:cover;
+    background:var(--surface-2)}
+  .chip .yt{color:#FF0033}
+  .chip .ig{color:#E1306C}
+  .chip .kim{color:#A855F7}
+  .modal-head .kim{color:#A855F7}
+  .modal-head .ig{color:#E1306C}
+  .connect-cta .ig{color:#E1306C}
+
+  /* ── layout ──────────────────────────────────────────── */
+  .wrap{max-width:1100px;margin:0 auto;padding:30px 20px 90px}
+  .hero{margin:8px 0 24px}
+  .hero h1{font-size:clamp(26px,4vw,36px);line-height:1.1;margin:0 0 10px;
+    letter-spacing:-.02em;font-weight:700}
+  .hero h1 .grad{background:linear-gradient(100deg,var(--primary),#A855F7 60%,#60A5FA);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{margin:0;color:var(--muted);font-size:16px;max-width:62ch}
+
+  .card{background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .card + .card{margin-top:18px}
+
+  .banner{display:flex;gap:11px;align-items:flex-start;
+    background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);
+    color:#FCE6B0;border-radius:var(--radius-sm);padding:12px 14px;
+    font-size:13px;margin-bottom:18px}
+  .banner svg{color:var(--warn);flex:none;margin-top:1px}
+
+  label{display:block;font-size:12.5px;font-weight:500;color:var(--muted);
+    margin:0 0 7px;letter-spacing:.01em}
+  .req::after{content:" *";color:var(--primary)}
+  input,select,textarea{width:100%;background:var(--surface-2);color:var(--fg);
+    border:1px solid var(--line-strong);border-radius:var(--radius-sm);
+    padding:11px 13px;font:inherit;font-size:14px;transition:border-color .15s,box-shadow .15s}
+  input::placeholder,textarea::placeholder{color:var(--muted-2)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);
+    box-shadow:var(--ring)}
+  textarea{resize:vertical;min-height:96px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:12.5px;line-height:1.5}
+
+  .url-field{position:relative}
+  .url-field .pre{position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    color:var(--muted-2);pointer-events:none}
+  .url-field input{padding-left:40px}
+
+  .row{display:flex;gap:14px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:150px}
+  .controls{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:14px;
+    color:var(--fg)}
+  .check{display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:14px;margin:0}
+  .check input{width:18px;height:18px;accent-color:var(--primary);cursor:pointer}
+  .seg{display:inline-flex;align-items:center;gap:9px;font-size:14px}
+  .seg select{width:auto;padding:8px 11px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    cursor:pointer;border:1px solid transparent;border-radius:var(--radius-sm);
+    padding:11px 18px;font:inherit;font-size:14px;font-weight:600;color:#fff;
+    background:var(--primary);transition:transform .12s,background .15s,box-shadow .15s,opacity .15s;
+    box-shadow:0 8px 22px -10px rgba(236,72,153,.8)}
+  .btn:hover{background:var(--primary-press)}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:none;box-shadow:var(--ring)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed;box-shadow:none}
+  .btn.accent{background:var(--accent);box-shadow:0 8px 22px -10px rgba(37,99,235,.8)}
+  .btn.accent:hover{background:var(--accent-press)}
+  .btn.ghost{background:transparent;border-color:var(--line-strong);color:var(--fg);box-shadow:none}
+  .btn.ghost:hover{border-color:var(--primary)}
+  .btn.danger{background:transparent;border-color:rgba(248,113,113,.4);color:var(--danger);box-shadow:none}
+  .btn.danger:hover{background:rgba(248,113,113,.1)}
+  .btn.sm{padding:8px 13px;font-size:13px}
+  .btn.block{width:100%}
+
+  /* progress */
+  .bar{height:9px;background:var(--surface-2);border-radius:999px;overflow:hidden;
+    border:1px solid var(--line)}
+  .bar>i{display:block;height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--primary),#A855F7);transition:width .4s ease}
+  .prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .prog-head .pct{font-variant-numeric:tabular-nums;font-weight:600;color:var(--fg)}
+  .status{color:var(--muted);font-size:13px;margin-top:10px;display:flex;align-items:center;gap:8px}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-strong);
+    border-top-color:var(--primary);animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .meta{color:var(--muted);font-size:13px;margin:22px 2px 14px;display:flex;
+    gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);
+    border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--fg)}
+
+  /* clips grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .clip{padding:16px}
+  .clip h3{font-size:15px;margin:0 0 4px;font-weight:600;letter-spacing:-.01em}
+  .clip .time{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;
+    display:flex;align-items:center;gap:7px}
+  .vids{display:flex;gap:10px;margin-top:12px}
+  .vids>div{flex:1;min-width:0}
+  .vids small{color:var(--muted-2);display:block;margin-bottom:5px;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  video{width:100%;border-radius:var(--radius-sm);background:#000;aspect-ratio:16/9;object-fit:cover}
+  .vids .vert video{aspect-ratio:9/16}
+  .links{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .links a{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;
+    color:var(--fg);text-decoration:none;border:1px solid var(--line-strong);
+    border-radius:8px;padding:7px 11px;transition:border-color .15s,background .15s}
+  .links a:hover{border-color:var(--primary);background:rgba(236,72,153,.06)}
+
+  .upbox{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
+  .upbox .row{margin-bottom:10px}
+  .upstatus{font-size:12.5px;margin-top:8px;min-height:16px;word-break:break-word}
+  .ok{color:var(--ok)} .err{color:var(--danger)} .muted{color:var(--muted)}
+
+  .connect-cta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    background:var(--surface-2);border:1px dashed var(--line-strong);
+    border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:var(--muted)}
+
+  /* empty / placeholder */
+  .empty{text-align:center;color:var(--muted);padding:46px 20px}
+  .empty .ic{width:54px;height:54px;border-radius:14px;margin:0 auto 14px;display:grid;
+    place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+
+  /* ── modal ───────────────────────────────────────────── */
+  .scrim{position:fixed;inset:0;z-index:60;background:rgba(2,6,16,.62);
+    backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+  .scrim.open{display:flex;animation:fade .18s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{width:100%;max-width:460px;background:var(--surface);border:1px solid var(--line-strong);
+    border-radius:18px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);overflow:hidden;
+    animation:pop .2s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;align-items:center;gap:11px;padding:18px 18px 14px;border-bottom:1px solid var(--line)}
+  .modal-head .yt{color:#FF0033}
+  .modal-head h2{font-size:16px;margin:0;font-weight:600;flex:1}
+  .x{cursor:pointer;border:none;background:transparent;color:var(--muted);padding:6px;
+    border-radius:8px;display:grid;place-items:center}
+  .x:hover{background:var(--surface-2);color:var(--fg)}
+  .x:focus-visible{outline:none;box-shadow:var(--ring)}
+  .modal-body{padding:18px;font-size:14px}
+  .steps{margin:0 0 14px;padding-left:18px;color:var(--muted);font-size:12.5px;line-height:1.7}
+  .steps a{color:#7DD3FC}
+  .acct{display:flex;align-items:center;gap:13px;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px}
+  .acct img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none}
+  .acct .nm{font-weight:600;font-size:15px}
+  .acct .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+  .note{font-size:12px;color:var(--muted-2);margin-top:12px;display:flex;gap:7px;align-items:flex-start}
+  .hide{display:none!important}
+
+  @media (max-width:560px){
+    .vids{flex-direction:column}
+    video{aspect-ratio:16/9}
+    .vids .vert video{aspect-ratio:9/16;max-height:340px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+      </span>
+      Clip&nbsp;Maker
+    </div>
+    <div class="spacer"></div>
+    <button id="libBtn" class="chip" aria-haspopup="dialog" aria-label="Open clip library" style="padding:6px 13px">
+      <svg class="icon-sm" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+      Library
+    </button>
+    <button id="aiChip" class="chip" aria-haspopup="dialog" aria-label="AI engine settings">
+      <span class="dot"></span>
+      <span class="kim" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></span>
+      <span id="aiChipLabel">AI</span>
+    </button>
+    <button id="acctChip" class="chip" aria-haspopup="dialog" aria-label="Manage YouTube account">
+      <span class="dot"></span>
+      <span class="yt" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.9 4.8 12 4.8 12 4.8s-5.9 0-7.6.4a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.7.4 7.6.4 7.6.4s5.9 0 7.6-.4a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15V9l5 3-5 3Z"/></svg></span>
+      <span id="acctChipLabel">YouTube</span>
+    </button>
+    <button id="igChip" class="chip" aria-haspopup="dialog" aria-label="Manage Instagram account">
+      <span class="dot"></span>
+      <span class="ig" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+      <span id="igChipLabel">Instagram</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Turn long videos into <span class="grad">scroll-stopping shorts</span></h1>
+    <p>Paste a YouTube link — Clip Maker finds the highlights and cuts each one into the original and a captioned 9:16 vertical, ready to download or publish.</p>
+  </section>
+
+  <div class="banner" role="note">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <span>Only use videos you own or have the rights to. Re-uploading others' content for monetization risks copyright strikes and channel termination.</span>
+  </div>
+
+  <!-- create -->
+  <div class="card">
+    <div class="url-field">
+      <label class="req" for="url">YouTube URL</label>
+      <span class="pre" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
+      <input id="url" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=…" />
+    </div>
+    <div class="row" style="margin-top:14px">
+      <div>
+        <label for="maxClips">Max clips</label>
+        <input id="maxClips" type="number" value="6" min="1" max="20" />
+      </div>
+      <div>
+        <label for="targetLen">Target clip length (sec)</label>
+        <input id="targetLen" type="number" value="45" min="10" max="180" />
+      </div>
+    </div>
+    <div class="controls">
+      <label class="check"><input type="checkbox" id="burnCaps" checked />Burn captions on vertical clips</label>
+      <label class="check"><input type="checkbox" id="burnHook" checked />Burn on-screen hook (first 2s)</label>
+      <label class="check"><input type="checkbox" id="aiMeta" checked />Auto-write titles &amp; descriptions (AI)</label>
+      <label class="check"><input type="checkbox" id="rankViral" checked />Rank clips by viral potential (AI)</label>
+      <label class="check"><input type="checkbox" id="makeThumbs" checked />Generate thumbnails</label>
+      <span class="seg"><span class="muted">Style</span>
+        <select id="capStyle">
+          <option value="words">Word-by-word (Shorts)</option>
+          <option value="phrases">Full phrases</option>
+        </select>
+      </span>
+    </div>
+    <div style="margin-top:18px">
+      <button id="go" class="btn">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M5 3 19 12 5 21V3Z"/></svg>
+        Make clips
+      </button>
+    </div>
+  </div>
+
+  <!-- progress -->
+  <div id="progress" class="card hide">
+    <div class="prog-head">
+      <strong>Processing</strong><span class="pct" id="pctLabel">0%</span>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="status" id="statusMsg"><span class="spin"></span>Starting…</div>
+  </div>
+
+  <!-- results -->
+  <div id="meta" class="meta hide"></div>
+  <div id="clips" class="grid"></div>
+  <div id="emptyState" class="empty">
+    <div class="ic"><svg class="icon" viewBox="0 0 24 24" style="width:24px;height:24px"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m22 8-6 4 6 4V8Z"/></svg></div>
+    Your clips will appear here once a video is processed.
+  </div>
+</main>
+
+<!-- account modal -->
+<div id="scrim" class="scrim" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="yt" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.9 4.8 12 4.8 12 4.8s-5.9 0-7.6.4a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.7.4 7.6.4 7.6.4s5.9 0 7.6-.4a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15V9l5 3-5 3Z"/></svg></span>
+      <h2 id="modalTitle">YouTube account</h2>
+      <button class="x" id="modalClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="modalBody"><!-- filled by JS --></div>
+  </div>
+</div>
+
+<!-- library modal -->
+<div id="libScrim" class="scrim" role="dialog" aria-modal="true" aria-labelledby="libTitle">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+      <h2 id="libTitle">Clip library</h2>
+      <button class="x" id="libClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="libBody" style="max-height:62vh;overflow:auto"><!-- filled by JS --></div>
+  </div>
+</div>
+
+<!-- AI engine modal -->
+<div id="aiScrim" class="scrim" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="kim" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></span>
+      <h2 id="aiTitle">AI engine</h2>
+      <button class="x" id="aiClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="aiBody"><!-- filled by JS --></div>
+  </div>
+</div>
+
+<!-- instagram modal -->
+<div id="igScrim" class="scrim" role="dialog" aria-modal="true" aria-labelledby="igTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="ig" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+      <h2 id="igTitle">Instagram account</h2>
+      <button class="x" id="igClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="igBody"><!-- filled by JS --></div>
+  </div>
+</div>
+
+<style>
+  .lib-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);
+    border-radius:var(--radius-sm);background:var(--surface-2);margin-bottom:10px}
+  .lib-row .meta-c{flex:1;min-width:0}
+  .lib-row .t{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lib-row .s{color:var(--muted);font-size:12px;margin-top:3px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:600}
+  .badge.done{background:rgba(52,211,153,.12);color:var(--ok)}
+  .badge.error{background:rgba(248,113,113,.12);color:var(--danger)}
+  .badge.running,.badge.queued{background:rgba(37,99,235,.14);color:#93C5FD}
+  .lib-row .acts{display:flex;gap:7px;flex:none}
+
+  .sugg{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
+  .sugg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .sugg-head .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+    font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip-s{cursor:pointer;border:1px solid var(--line-strong);background:var(--surface-2);
+    color:var(--fg);border-radius:8px;padding:6px 10px;font-size:12.5px;line-height:1.3;
+    text-align:left;transition:border-color .15s,background .15s}
+  .chip-s:hover{border-color:var(--primary);background:rgba(236,72,153,.08)}
+  .chip-s:focus-visible{outline:none;box-shadow:var(--ring)}
+  .score-badge{display:inline-flex;align-items:center;justify-content:center;min-width:24px;
+    height:20px;padding:0 7px;border-radius:6px;font-weight:700;font-size:11px;margin-right:7px;flex:none}
+  [data-livescore] .score-badge{margin-right:0}
+  .score-badge.hi{background:rgba(52,211,153,.18);color:var(--ok)}
+  .score-badge.mid{background:rgba(251,191,36,.18);color:var(--warn)}
+  .score-badge.lo{background:rgba(248,113,113,.18);color:var(--danger)}
+  .score-reason{display:block;color:var(--muted-2);font-size:11px;margin-top:4px;font-weight:400}
+  .viral{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 11px 4px 8px;
+    font-size:12px;margin-bottom:10px;border:1px solid transparent;cursor:default}
+  .viral svg{width:14px;height:14px}
+  .viral b{font-weight:800;font-variant-numeric:tabular-nums}
+  .viral span{color:var(--muted);font-weight:500}
+  .viral.hi{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.3);color:var(--ok)}
+  .viral.mid{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:var(--warn)}
+  .viral.lo{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.28);color:var(--danger)}
+  .tag-chip{cursor:pointer;border:1px solid var(--line-strong);background:var(--surface-2);
+    color:#93C5FD;border-radius:999px;padding:4px 10px;font-size:12px;transition:border-color .15s}
+  .tag-chip:hover{border-color:var(--accent)}
+  .tag-chip.on{background:rgba(37,99,235,.18);border-color:var(--accent);color:#BFDBFE}
+  .upsec{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
+  .upsec .ttl{font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+  .upsec .ttl .yt{color:#FF0033} .upsec .ttl .ig{color:#E1306C}
+  .method{border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;background:var(--surface-2)}
+  .method-h{font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  details.method > summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:500;list-style:none}
+  details.method > summary::-webkit-details-marker{display:none}
+  details.method[open] > summary{color:var(--fg);margin-bottom:4px}
+  .method code{background:var(--bg-2);padding:1px 5px;border-radius:4px;font-size:11.5px}
+</style>
+
+<script>
+const $ = (s) => document.querySelector(s);
+let account = {client_configured:false, connected:false, channel:null};  // YouTube
+let ig = {connected:false, account:null};                                 // Instagram
+let aiCfg = {configured:false, model:'', from_env:false, key_hint:null};  // Kimchi
+let lastResult = null;
+
+const YT_ICON = `<span class="yt" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.9 4.8 12 4.8 12 4.8s-5.9 0-7.6.4a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.7.4 7.6.4 7.6.4s5.9 0 7.6-.4a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15V9l5 3-5 3Z"/></svg></span>`;
+const IG_ICON = `<span class="ig" aria-hidden="true"><svg class="icon-sm" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>`;
+
+/* ── accounts ────────────────────────────────────────── */
+async function refreshAccount() {
+  try { account = await (await fetch('/api/youtube/status')).json(); } catch (_) {}
+  try { ig = await (await fetch('/api/instagram/status')).json(); } catch (_) {}
+  try { aiCfg = await (await fetch('/api/llm/status')).json(); } catch (_) {}
+  renderChip(); renderIgChip(); renderAiChip();
+  if ($('#scrim').classList.contains('open')) renderModal();
+  if ($('#igScrim').classList.contains('open')) renderIgModal();
+  if ($('#aiScrim').classList.contains('open')) renderAiModal();
+  if (lastResult) renderClips(lastResult);   // upload boxes reflect new state
+}
+
+function renderAiChip() {
+  const chip = $('#aiChip');
+  chip.classList.toggle('live', !!aiCfg.configured);
+  $('#aiChipLabel').textContent = aiCfg.configured
+    ? (aiCfg.model || 'Kimchi') : 'AI';
+}
+
+function renderChip() {
+  const connected = account.connected && account.channel;
+  const icon = connected && account.channel.thumbnail
+    ? `<img class="av" src="${account.channel.thumbnail}" alt="">` : YT_ICON;
+  const label = connected ? (account.channel.title || 'Connected')
+    : (account.client_configured ? 'Connect account' : 'YouTube');
+  const chip = $('#acctChip');
+  chip.classList.toggle('live', !!account.connected);
+  chip.innerHTML = `<span class="dot"></span>${icon}<span id="acctChipLabel">${esc(label)}</span>`;
+}
+
+function renderIgChip() {
+  const a = ig.account || {};
+  const icon = ig.connected && a.profile_pic
+    ? `<img class="av" src="${a.profile_pic}" alt="">` : IG_ICON;
+  const label = ig.connected ? ('@' + (a.username || 'connected')) : 'Instagram';
+  const chip = $('#igChip');
+  chip.classList.toggle('live', !!ig.connected);
+  chip.innerHTML = `<span class="dot"></span>${icon}<span id="igChipLabel">${esc(label)}</span>`;
+}
+
+function renderModal() {
+  const body = $('#modalBody');
+
+  // ── connected ──
+  if (account.connected) {
+    const ch = account.channel || {};
+    const via = account.method === 'browser' ? 'Browser session' : 'Official API';
+    const subs = ch.subscribers ? `${Number(ch.subscribers).toLocaleString()} subscribers`
+      : (account.method === 'browser' ? 'Connected via browser' : 'Connected');
+    body.innerHTML = `
+      <div class="acct">
+        ${ch.thumbnail ? `<img src="${ch.thumbnail}" alt="">` : `<div style="width:48px;height:48px"></div>`}
+        <div style="flex:1;min-width:0">
+          <div class="nm">${esc(ch.title || 'Your channel')}</div>
+          <div class="sub">${esc(subs)} · ${esc(via)}</div>
+        </div>
+        <svg class="icon" viewBox="0 0 24 24" style="color:var(--ok)"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin:14px 0 0">Clips upload to this channel. Default privacy is <b>unlisted</b>.</p>
+      <div class="modal-foot"><button class="btn danger sm" id="btnDisconnect">Disconnect</button></div>`;
+    $('#btnDisconnect').onclick = doDisconnect;
+    return;
+  }
+
+  // ── not connected: offer the browser method first, official API second ──
+  const pwAvail = account.pw_available;
+  body.innerHTML = `
+    <div class="method">
+      <div class="method-h"><svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg> Browser — no Google Cloud setup</div>
+      <p class="muted" style="font-size:12.5px;margin:0 0 10px">Log into Google once in a browser window; uploads reuse that session. Unofficial &amp; against YouTube's ToS — small account risk.</p>
+      ${pwAvail ? `<button class="btn accent block" id="btnPwConnect">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+        Connect with browser</button>`
+      : `<div class="note" style="margin-top:0"><svg class="icon-sm" viewBox="0 0 24 24" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Playwright isn't installed. Run <code>pip install playwright</code> then <code>python -m playwright install chromium</code> and restart.</div>`}
+      <div id="pwErr" class="err" style="font-size:12.5px;margin-top:8px"></div>
+    </div>
+
+    <details class="method" style="margin-top:14px">
+      <summary>Official API (advanced — ToS-safe, ~6 uploads/day)</summary>
+      <div style="margin-top:12px">
+        ${account.client_configured
+          ? `<p class="muted" style="margin:0 0 12px">OAuth client is set up.</p>
+             <button class="btn block" id="btnConnect">Connect channel (OAuth)</button>
+             <div class="note"><svg class="icon-sm" viewBox="0 0 24 24" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>A browser opens for Google's consent screen.</div>`
+          : `<ol class="steps">
+               <li>Open <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a> → create a project.</li>
+               <li>Enable <b>YouTube Data API v3</b>.</li>
+               <li>OAuth consent screen → add your email as a <b>Test user</b>.</li>
+               <li>Credentials → <b>OAuth client ID → Desktop app</b> → download JSON.</li>
+             </ol>
+             <label for="csFile">Upload <code>client_secret.json</code></label>
+             <input type="file" id="csFile" accept="application/json,.json" />
+             <label for="csPaste" style="margin-top:12px">…or paste its contents</label>
+             <textarea id="csPaste" placeholder='{ "installed": { "client_id": "…", … } }'></textarea>
+             <div id="csErr" class="err" style="font-size:12.5px;margin-top:8px"></div>
+             <div class="modal-foot"><button class="btn block" id="btnSaveCs">Save & continue</button></div>`}
+      </div>
+    </details>`;
+
+  if (pwAvail) $('#btnPwConnect').onclick = doPwConnect;
+  if (account.client_configured) {
+    $('#btnConnect').onclick = doConnect;
+  } else {
+    const fileEl = $('#csFile'), pasteEl = $('#csPaste');
+    if (fileEl) fileEl.onchange = async () => { if (fileEl.files[0]) pasteEl.value = await fileEl.files[0].text(); };
+    if ($('#btnSaveCs')) $('#btnSaveCs').onclick = () => doSaveClientSecret(pasteEl.value.trim());
+  }
+}
+
+async function doPwConnect() {
+  const btn = $('#btnPwConnect'), errEl = $('#pwErr');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin"></span> A browser opened — log into Google there…`;
+  try {
+    const r = await fetch('/api/youtube/pw/connect', {method:'POST'});
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || 'Connect failed');
+    account = data; renderChip(); renderModal();
+    if (lastResult) renderClips(lastResult);
+  } catch (e) {
+    errEl.textContent = e.message;
+    btn.disabled = false; btn.innerHTML = 'Connect with browser';
+  }
+}
+
+async function doSaveClientSecret(content) {
+  const errEl = $('#csErr'), btn = $('#btnSaveCs');
+  errEl.textContent = '';
+  if (!content) { errEl.textContent = 'Upload or paste your client_secret.json first.'; return; }
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/youtube/client-secret', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({content})
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || 'Could not save');
+    account = data; renderChip(); renderModal();
+  } catch (e) {
+    errEl.textContent = e.message; btn.disabled = false; btn.textContent = 'Save & continue';
+  }
+}
+
+async function doConnect() {
+  const btn = $('#btnConnect');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin"></span> Waiting for browser approval…`;
+  try {
+    const r = await fetch('/api/youtube/connect', {method:'POST'});
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || 'Connect failed');
+    account = data; renderChip(); renderModal();
+    if (lastResult) renderClips(lastResult);
+  } catch (e) {
+    $('#modalBody').insertAdjacentHTML('beforeend',
+      `<div class="err" style="font-size:12.5px;margin-top:10px">${esc(e.message)}</div>`);
+    btn.disabled = false;
+    btn.innerHTML = 'Connect channel';
+  }
+}
+
+async function doDisconnect() {
+  const btn = $('#btnDisconnect'); btn.disabled = true; btn.textContent = 'Disconnecting…';
+  const ep = account.method === 'browser' ? '/api/youtube/pw/disconnect' : '/api/youtube/disconnect';
+  try { account = await (await fetch(ep, {method:'POST'})).json(); }
+  catch (_) {}
+  renderChip(); renderModal();
+  if (lastResult) renderClips(lastResult);
+}
+
+/* modal open/close + focus management */
+let lastFocus = null;
+function openModal(){ lastFocus = document.activeElement; renderModal();
+  $('#scrim').classList.add('open'); $('#modalClose').focus(); }
+function closeModal(){ $('#scrim').classList.remove('open'); lastFocus?.focus(); }
+$('#acctChip').onclick = openModal;
+$('#modalClose').onclick = closeModal;
+$('#scrim').addEventListener('click', e => { if (e.target === $('#scrim')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#scrim').classList.contains('open')) closeModal(); });
+
+/* ── instagram modal ─────────────────────────────────── */
+function renderIgModal() {
+  const body = $('#igBody');
+  if (ig.connected) {
+    const a = ig.account || {};
+    body.innerHTML = `
+      <div class="acct">
+        ${a.profile_pic ? `<img src="${a.profile_pic}" alt="">` : `<div style="width:48px;height:48px"></div>`}
+        <div style="flex:1;min-width:0">
+          <div class="nm">@${esc(a.username || 'connected')}</div>
+          <div class="sub">${esc(a.full_name || 'Connected')}</div>
+        </div>
+        <svg class="icon" viewBox="0 0 24 24" style="color:var(--ok)"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin:14px 0 0">Clips upload as <b>Reels</b> to this account.</p>
+      <div class="modal-foot"><button class="btn danger sm" id="igDisconnect">Disconnect</button></div>`;
+    $('#igDisconnect').onclick = igDoDisconnect;
+    return;
+  }
+  body.innerHTML = `
+    <div class="banner" role="note" style="margin:0 0 14px">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <span>This signs in via Instagram's private API — against their Terms of Service, with a real risk of temporary blocks or bans. Use an account you're willing to risk.</span>
+    </div>
+    <label for="igUser">Username</label>
+    <input id="igUser" autocomplete="username" autocapitalize="none" placeholder="your_handle" />
+    <label for="igPass" style="margin-top:12px">Password</label>
+    <input id="igPass" type="password" autocomplete="current-password" placeholder="••••••••" />
+    <div id="ig2faWrap" class="hide"><label for="ig2fa" style="margin-top:12px">2-factor code</label>
+      <input id="ig2fa" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" /></div>
+    <div id="igErr" class="err" style="font-size:12.5px;margin-top:8px"></div>
+    <div class="modal-foot"><button class="btn block" id="igConnect" style="background:#E1306C;box-shadow:none">Connect account</button></div>`;
+  const onEnter = e => { if (e.key === 'Enter') igDoConnect(); };
+  $('#igUser').onkeydown = $('#igPass').onkeydown = onEnter;
+  $('#igConnect').onclick = igDoConnect;
+}
+
+async function igDoConnect() {
+  const errEl = $('#igErr'), btn = $('#igConnect');
+  errEl.textContent = '';
+  const username = $('#igUser').value.trim(), password = $('#igPass').value;
+  const code = ($('#ig2fa') && $('#ig2fa').value || '').trim();
+  if (!username || !password) { errEl.textContent = 'Enter your username and password.'; return; }
+  btn.disabled = true; btn.innerHTML = `<span class="spin"></span> Connecting…`;
+  try {
+    const r = await fetch('/api/instagram/connect', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username, password, verification_code: code}),
+    });
+    const data = await r.json();
+    if (r.status === 428) {                 // 2FA required
+      $('#ig2faWrap').classList.remove('hide');
+      errEl.textContent = data.detail || 'Enter your 6-digit code.';
+      $('#ig2fa').focus();
+      btn.disabled = false; btn.textContent = 'Connect account'; return;
+    }
+    if (!r.ok) throw new Error(data.detail || 'Connect failed');
+    ig = data; renderIgChip(); renderIgModal();
+    if (lastResult) renderClips(lastResult);
+  } catch (e) {
+    errEl.textContent = e.message;
+    btn.disabled = false; btn.textContent = 'Connect account';
+  }
+}
+
+async function igDoDisconnect() {
+  const btn = $('#igDisconnect'); btn.disabled = true; btn.textContent = 'Disconnecting…';
+  try { ig = await (await fetch('/api/instagram/disconnect', {method:'POST'})).json(); }
+  catch (_) {}
+  renderIgChip(); renderIgModal();
+  if (lastResult) renderClips(lastResult);
+}
+
+function openIgModal(){ lastFocus = document.activeElement; renderIgModal();
+  $('#igScrim').classList.add('open'); $('#igClose').focus(); }
+function closeIgModal(){ $('#igScrim').classList.remove('open'); lastFocus?.focus(); }
+$('#igChip').onclick = openIgModal;
+$('#igClose').onclick = closeIgModal;
+$('#igScrim').addEventListener('click', e => { if (e.target === $('#igScrim')) closeIgModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#igScrim').classList.contains('open')) closeIgModal(); });
+
+/* ── AI engine (Kimchi) modal ────────────────────────── */
+function renderAiModal() {
+  const body = $('#aiBody');
+  const engine = aiCfg.configured ? `Kimchi · <b>${esc(aiCfg.model)}</b>`
+    : 'Not set — using local ollama or keyword fallback';
+  body.innerHTML = `
+    <div class="acct" style="margin-bottom:14px">
+      <span class="kim" style="flex:none"><svg class="icon" viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></span>
+      <div style="flex:1;min-width:0">
+        <div class="nm">${aiCfg.configured ? 'Kimchi connected' : 'No cloud AI'}</div>
+        <div class="sub">${engine}</div>
+      </div>
+      ${aiCfg.configured ? `<svg class="icon" viewBox="0 0 24 24" style="color:var(--ok)"><path d="M20 6 9 17l-5-5"/></svg>` : ''}
+    </div>
+    <p class="muted" style="font-size:12.5px;margin:0 0 14px">Kimchi Inference (OpenAI-compatible) writes the clip titles, descriptions, hashtags and suggestions. Get a key at <a href="https://kimchi.dev" target="_blank" rel="noopener" style="color:#C4B5FD">kimchi.dev</a>.</p>
+    ${aiCfg.from_env ? `<div class="note" style="margin-top:0"><svg class="icon-sm" viewBox="0 0 24 24" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>A key is set via the <code>KIMCHI_API_KEY</code> env var (ending ${esc((aiCfg.key_hint||'').slice(-4))}). Entering one below overrides it — useful if the env value is a placeholder.</div>` : ''}
+    <label for="aiKey" style="margin-top:12px">API key${(aiCfg.configured && !aiCfg.from_env) ? ` <span class="muted" style="font-weight:400">(currently ${esc(aiCfg.key_hint||'set')})</span>` : ''}</label>
+    <input id="aiKey" type="password" autocomplete="off" placeholder="${aiCfg.configured ? 'Enter a key to replace the current one' : 'your Kimchi API key'}" />
+    <label for="aiModel" style="margin-top:12px">Model</label>
+    <select id="aiModel">
+      <option value="kimi-k2.6">kimi-k2.6 — best quality</option>
+      <option value="minimax-m3">minimax-m3</option>
+      <option value="minimax-m2.7">minimax-m2.7</option>
+      <option value="nemotron-3-ultra-fp4">nemotron-3-ultra-fp4 — fastest</option>
+    </select>
+    <div id="aiErr" class="err" style="font-size:12.5px;margin-top:8px"></div>
+    <div class="modal-foot">
+      ${(aiCfg.configured && !aiCfg.from_env) ? `<button class="btn danger sm" id="aiClear">Remove</button>` : ''}
+      <button class="btn accent sm" id="aiSave" style="background:#A855F7;box-shadow:none">Save &amp; verify</button>
+    </div>`;
+  const modelSel = $('#aiModel');
+  if (modelSel && aiCfg.model) modelSel.value = aiCfg.model;
+  if ($('#aiSave')) $('#aiSave').onclick = aiSave;
+  if ($('#aiClear')) $('#aiClear').onclick = aiClear;
+}
+
+async function aiSave() {
+  const errEl = $('#aiErr'), btn = $('#aiSave');
+  errEl.textContent = '';
+  const api_key = ($('#aiKey') && $('#aiKey').value || '').trim();
+  const model = $('#aiModel').value;
+  // Require a key unless a real (non-env) key is already saved and we're just
+  // changing the model.
+  const hasSavedKey = aiCfg.configured && !aiCfg.from_env;
+  if (!api_key && !hasSavedKey) { errEl.textContent = 'Enter your Kimchi API key.'; return; }
+  btn.disabled = true; btn.innerHTML = `<span class="spin"></span> Verifying…`;
+  try {
+    const r = await fetch('/api/llm/config', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ api_key, model }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || 'Could not save');
+    aiCfg = data; renderAiChip(); renderAiModal();
+    if (lastResult) renderClips(lastResult);
+  } catch (e) {
+    errEl.textContent = e.message;
+    btn.disabled = false; btn.textContent = 'Save & verify';
+  }
+}
+
+async function aiClear() {
+  const btn = $('#aiClear'); btn.disabled = true; btn.textContent = 'Removing…';
+  try { aiCfg = await (await fetch('/api/llm/disconnect', {method:'POST'})).json(); }
+  catch (_) {}
+  renderAiChip(); renderAiModal();
+}
+
+function openAiModal(){ lastFocus = document.activeElement; renderAiModal();
+  $('#aiScrim').classList.add('open'); $('#aiClose').focus(); }
+function closeAiModal(){ $('#aiScrim').classList.remove('open'); lastFocus?.focus(); }
+$('#aiChip').onclick = openAiModal;
+$('#aiClose').onclick = closeAiModal;
+$('#aiScrim').addEventListener('click', e => { if (e.target === $('#aiScrim')) closeAiModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#aiScrim').classList.contains('open')) closeAiModal(); });
+
+/* ── library ─────────────────────────────────────────── */
+function openLibrary(){ lastFocus = document.activeElement; $('#libScrim').classList.add('open');
+  $('#libClose').focus(); loadLibrary(); }
+function closeLibrary(){ $('#libScrim').classList.remove('open'); lastFocus?.focus(); }
+$('#libBtn').onclick = openLibrary;
+$('#libClose').onclick = closeLibrary;
+$('#libScrim').addEventListener('click', e => { if (e.target === $('#libScrim')) closeLibrary(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#libScrim').classList.contains('open')) closeLibrary(); });
+
+async function loadLibrary(){
+  const body = $('#libBody');
+  body.innerHTML = `<div class="status"><span class="spin"></span> Loading…</div>`;
+  let jobs = [];
+  try { jobs = (await (await fetch('/api/jobs')).json()).jobs || []; }
+  catch(_){ body.innerHTML = `<div class="err">Couldn't load history.</div>`; return; }
+  if (!jobs.length){
+    body.innerHTML = `<div class="empty" style="padding:30px 10px">No clips yet — process a video and it'll show up here.</div>`;
+    return;
+  }
+  body.innerHTML = '';
+  for (const j of jobs){
+    const when = new Date(j.created_at * 1000).toLocaleString();
+    const row = document.createElement('div');
+    row.className = 'lib-row';
+    const canOpen = j.status === 'done' && j.clip_count > 0;
+    row.innerHTML = `
+      <div class="meta-c">
+        <div class="t">${esc(j.source_title)}</div>
+        <div class="s">
+          <span class="badge ${esc(j.status)}">${esc(j.status)}</span>
+          <span>${j.clip_count} clip${j.clip_count===1?'':'s'}</span>
+          <span>· ${esc(when)}</span>
+        </div>
+      </div>
+      <div class="acts">
+        <button class="btn sm ghost" data-open ${canOpen?'':'disabled'}>Open</button>
+        <button class="btn sm danger" data-del>Delete</button>
+      </div>`;
+    row.querySelector('[data-open]').onclick = () => openJob(j.job_id);
+    row.querySelector('[data-del]').onclick = () => deleteJob(j.job_id, row);
+    body.appendChild(row);
+  }
+}
+
+async function openJob(jobId){
+  try {
+    const j = await (await fetch('/api/status/' + jobId)).json();
+    if (!j.result) return;
+    lastResult = j.result;
+    renderResult(j.result);
+    closeLibrary();
+    $('#meta').scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(_){}
+}
+
+async function deleteJob(jobId, row){
+  if (!confirm('Delete this job and its clip files? This cannot be undone.')) return;
+  try {
+    await fetch('/api/jobs/' + jobId, {method:'DELETE'});
+    row.remove();
+    if (!$('#libBody').querySelector('.lib-row'))
+      $('#libBody').innerHTML = `<div class="empty" style="padding:30px 10px">No clips yet.</div>`;
+  } catch(_){}
+}
+
+/* ── pipeline ────────────────────────────────────────── */
+$('#go').onclick = async () => {
+  const url = $('#url').value.trim();
+  if (!url) { $('#url').focus(); $('#url').style.borderColor = 'var(--danger)'; return; }
+  $('#url').style.borderColor = '';
+  const go = $('#go'); go.disabled = true;
+  $('#clips').innerHTML = ''; $('#meta').classList.add('hide');
+  $('#emptyState').classList.add('hide');
+  $('#progress').classList.remove('hide');
+  setBar(3, 'Submitting…');
+  try {
+    const res = await fetch('/api/process', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        url,
+        max_clips: parseInt($('#maxClips').value) || 6,
+        target_len: parseFloat($('#targetLen').value) || 45,
+        burn_captions: $('#burnCaps').checked,
+        burn_hook: $('#burnHook').checked,
+        caption_style: $('#capStyle').value,
+        write_metadata: $('#aiMeta').checked,
+        rank_by_virality: $('#rankViral').checked,
+        make_thumbnails: $('#makeThumbs').checked,
+      }),
+    });
+    if (!res.ok) throw new Error((await res.json()).detail || 'Request failed');
+    poll((await res.json()).job_id);
+  } catch (e) {
+    setBar(0, 'Error: ' + e.message, true); go.disabled = false;
+  }
+};
+
+function setBar(pct, msg, isErr) {
+  $('#barFill').style.width = (pct || 0) + '%';
+  $('#pctLabel').textContent = Math.round(pct || 0) + '%';
+  if (msg) $('#statusMsg').innerHTML =
+    (isErr ? '' : '<span class="spin"></span>') + esc(msg);
+}
+
+async function poll(jobId) {
+  try {
+    const r = await fetch('/api/status/' + jobId);
+    const j = await r.json();
+    setBar(j.pct || 0, j.message || j.status);
+    if (j.status === 'done') { lastResult = j.result; renderResult(j.result); $('#go').disabled = false; return; }
+    if (j.status === 'error') { setBar(j.pct||0, j.message || 'Error', true); $('#go').disabled = false; return; }
+  } catch (_) {}
+  setTimeout(() => poll(jobId), 1500);
+}
+
+function renderResult(result) {
+  $('#progress').classList.add('hide');
+  $('#emptyState').classList.add('hide');
+  const m = $('#meta'); m.classList.remove('hide');
+  m.innerHTML = `
+    <span class="pill"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>${esc(result.source_title || 'Source')}</span>
+    <span class="pill">transcript: ${esc(result.transcript_source)}</span>
+    <span class="pill">highlights: ${esc(result.method)}</span>
+    <span class="pill">${result.clips.length} clips</span>`;
+  renderClips(result);
+}
+
+function renderClips(result) {
+  const root = $('#clips'); root.innerHTML = '';
+  for (const c of result.clips) root.appendChild(clipCard(result.job_id, c));
+}
+
+function clipCard(jobId, c) {
+  const base = `/api/clip/${jobId}/`;
+  const el = document.createElement('div');
+  el.className = 'card clip';
+  el.innerHTML = `
+    ${viralBadge(c)}
+    <h3>${esc(c.title)}</h3>
+    ${c.hook ? `<div class="muted" style="font-size:12.5px;margin:-2px 0 7px">On-screen hook: &ldquo;${esc(c.hook)}&rdquo;</div>` : ''}
+    <div class="time"><svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${fmt(c.start)}–${fmt(c.end)} · ${c.duration}s</div>
+    <div class="vids">
+      <div><small>Original</small><video controls preload="metadata" src="${base}${c.original}"></video></div>
+      <div class="vert"><small>Vertical 9:16</small><video controls preload="metadata" src="${base}${c.vertical}"></video></div>
+    </div>
+    <div class="links">
+      <a href="${base}${c.original}?download=true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Original</a>
+      <a href="${base}${c.vertical}?download=true"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Vertical</a>
+      ${c.thumbnail ? `<a href="${base}${c.thumbnail}?download=true"><svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>Thumbnail</a>` : ''}
+    </div>
+    ${c.thumbnail ? `<div class="thumb"><small>Thumbnail</small><img loading="lazy" src="${base}${c.thumbnail}" alt="Thumbnail for ${escAttr(c.title)}"></div>` : ''}
+
+    <!-- shared metadata, used by every platform -->
+    <div class="upsec">
+      <div class="row">
+        <div style="flex:2"><label style="display:flex;justify-content:space-between;align-items:center;gap:8px">Title <span data-livescore title="Live hook score"></span></label><input class="f-title" value="${escAttr(c.title)}"></div>
+        <div><label>Which file</label>
+          <select class="f-file"><option value="${c.vertical}">Vertical 9:16</option><option value="${c.original}">Original</option></select></div>
+      </div>
+      <div style="margin-top:10px"><label>Description / caption</label><textarea class="f-desc" style="font-family:inherit;font-size:13px;min-height:74px">${esc(c.description || '')}</textarea></div>
+      <div style="margin-top:10px"><label>Tags <span class="muted" style="font-weight:400">(comma-separated, YouTube)</span></label><input class="f-tags" value="${escAttr((c.tags || []).join(', '))}"></div>
+    </div>
+
+    <!-- viral suggestions -->
+    <div class="sugg">
+      <div class="sugg-head">
+        <span class="lbl"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg> Title ideas</span>
+        <span style="display:flex;gap:7px">
+          <button class="btn sm ghost" data-score><svg class="icon-sm" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> Score</button>
+          <button class="btn sm ghost" data-regen><svg class="icon-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Regenerate</button>
+        </span>
+      </div>
+      <div class="chips" data-titles></div>
+      <div class="sugg-head" style="margin-top:14px">
+        <span class="lbl"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg> Hashtags <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">— tap to add to caption</span></span>
+        <button class="btn sm ghost" data-addall>Add all</button>
+      </div>
+      <div class="chips" data-tagschips></div>
+    </div>
+
+    <!-- youtube -->
+    <div class="upsec">
+      <div class="ttl">${YT_ICON} YouTube</div>
+      <div data-yt></div>
+    </div>
+    <!-- instagram -->
+    <div class="upsec">
+      <div class="ttl">${IG_ICON} Instagram Reels</div>
+      <div data-ig></div>
+    </div>`;
+
+  const titleEl = el.querySelector('.f-title');
+  const descEl = el.querySelector('.f-desc');
+  const tagsEl = el.querySelector('.f-tags');
+  const fileEl = el.querySelector('.f-file');
+
+  /* live hook score next to the title field (instant, client-side) */
+  const liveScoreEl = el.querySelector('[data-livescore]');
+  function updateLiveScore(){
+    const t = titleEl.value.trim();
+    if (!t) { liveScoreEl.innerHTML = ''; return; }
+    const s = heuristicScore(t);
+    liveScoreEl.innerHTML = `<span class="score-badge ${s.cls}" title="${escAttr(s.reason)}">${s.score}/10</span>`;
+  }
+  titleEl.addEventListener('input', updateLiveScore);
+  updateLiveScore();
+
+  /* suggestions */
+  const titlesBox = el.querySelector('[data-titles]');
+  const tagsBox = el.querySelector('[data-tagschips]');
+  function fillSuggestions(titleSugs, hashtags){
+    titlesBox.innerHTML = '';
+    (titleSugs || []).forEach(t => {
+      const b = document.createElement('button');
+      b.className = 'chip-s'; b.type = 'button'; b.textContent = t;
+      b.onclick = () => { titleEl.value = t; titleEl.focus(); };
+      titlesBox.appendChild(b);
+    });
+    if (!titlesBox.children.length) titlesBox.innerHTML = `<span class="muted" style="font-size:12.5px">No suggestions — enable AI when processing.</span>`;
+    tagsBox.innerHTML = '';
+    (hashtags || []).forEach(h => {
+      const b = document.createElement('button');
+      b.className = 'tag-chip'; b.type = 'button'; b.textContent = h;
+      if (descEl.value.includes(h)) b.classList.add('on');
+      b.onclick = () => toggleHashtag(descEl, h, b);
+      tagsBox.appendChild(b);
+    });
+    if (!tagsBox.children.length) tagsBox.style.display = 'none';
+  }
+  function renderScoredTitles(scores){
+    titlesBox.innerHTML = '';
+    if (!scores.length) { fillSuggestions(c.title_suggestions, c.hashtags); return; }
+    scores.forEach(s => {
+      const cls = s.score >= 8 ? 'hi' : s.score >= 5 ? 'mid' : 'lo';
+      const b = document.createElement('button');
+      b.className = 'chip-s'; b.type = 'button';
+      b.innerHTML = `<span><span class="score-badge ${cls}">${s.score}</span>${esc(s.title)}</span>`
+        + (s.reason ? `<span class="score-reason">${esc(s.reason)}</span>` : '');
+      b.onclick = () => { titleEl.value = s.title; titleEl.focus(); };
+      titlesBox.appendChild(b);
+    });
+  }
+  fillSuggestions(c.title_suggestions, c.hashtags);
+
+  el.querySelector('[data-score]').onclick = async (e) => {
+    const btn = e.currentTarget; btn.disabled = true;
+    btn.innerHTML = `<span class="spin"></span> Scoring…`;
+    try {
+      const r = await fetch('/api/score', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ titles: c.title_suggestions || [],
+          text: descEl.value || titleEl.value }),
+      });
+      const d = await r.json();
+      renderScoredTitles(d.scores || []);
+    } catch (_) {}
+    btn.disabled = false;
+    btn.innerHTML = `<svg class="icon-sm" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> Score`;
+  };
+
+  el.querySelector('[data-addall]').onclick = () => {
+    (c.hashtags || []).forEach(h => {
+      if (!descEl.value.includes(h)) descEl.value = (descEl.value.trimEnd() + '\n' + h).trim();
+    });
+    tagsBox.querySelectorAll('.tag-chip').forEach(b => b.classList.add('on'));
+  };
+  el.querySelector('[data-regen]').onclick = async (e) => {
+    const btn = e.currentTarget; btn.disabled = true;
+    btn.innerHTML = `<span class="spin"></span> Thinking…`;
+    try {
+      const r = await fetch('/api/suggest', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ text: descEl.value || titleEl.value,
+          title: titleEl.value, duration: c.duration }),
+      });
+      const d = await r.json();
+      c.title_suggestions = d.title_suggestions; c.hashtags = d.hashtags;
+      fillSuggestions(d.title_suggestions, d.hashtags);
+    } catch (_) {}
+    btn.disabled = false;
+    btn.innerHTML = `<svg class="icon-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Regenerate`;
+  };
+
+  /* youtube section */
+  const ytBox = el.querySelector('[data-yt]');
+  if (!account.connected) {
+    ytBox.innerHTML = `<div class="connect-cta">${YT_ICON}<span style="flex:1">Connect YouTube to upload this clip.</span><button class="btn accent sm" data-c>Connect</button></div>`;
+    ytBox.querySelector('[data-c]').onclick = openModal;
+  } else {
+    ytBox.innerHTML = `
+      <div class="row" style="align-items:flex-end">
+        <div><label>Privacy</label><select class="f-privacy"><option value="unlisted">Unlisted</option><option value="private">Private</option><option value="public">Public</option></select></div>
+        <div style="flex:2"><button class="btn accent block" data-up><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12m0-12 4 4m-4-4-4 4M5 21h14"/></svg> Upload to YouTube</button></div>
+      </div>
+      <div class="upstatus muted"></div>`;
+    const privacyEl = ytBox.querySelector('.f-privacy');
+    const btn = ytBox.querySelector('[data-up]'), st = ytBox.querySelector('.upstatus');
+    btn.onclick = async () => {
+      btn.disabled = true; st.className = 'upstatus muted';
+      st.innerHTML = '<span class="spin" style="display:inline-block;vertical-align:-2px"></span> Uploading…';
+      try {
+        const tags = tagsEl.value.split(',').map(t => t.trim()).filter(Boolean);
+        const res = await fetch('/api/upload', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ job_id: jobId, file: fileEl.value, title: titleEl.value,
+            privacy: privacyEl.value, description: descEl.value, tags }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Upload failed');
+        st.className = 'upstatus ok';
+        st.innerHTML = `Uploaded → <a href="${data.url}" target="_blank" rel="noopener" style="color:var(--ok)">${data.url}</a>`;
+      } catch (e) { st.className = 'upstatus err'; st.textContent = e.message; }
+      finally { btn.disabled = false; }
+    };
+  }
+
+  /* instagram section */
+  const igBox = el.querySelector('[data-ig]');
+  if (!ig.connected) {
+    igBox.innerHTML = `<div class="connect-cta">${IG_ICON}<span style="flex:1">Connect Instagram to upload as a Reel.</span><button class="btn sm" style="background:#E1306C;box-shadow:none" data-c>Connect</button></div>`;
+    igBox.querySelector('[data-c]').onclick = openIgModal;
+  } else {
+    igBox.innerHTML = `
+      <button class="btn block" style="background:#E1306C;box-shadow:none" data-up><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/></svg> Upload Reel to @${esc((ig.account||{}).username||'')}</button>
+      <div class="muted" style="font-size:11.5px;margin-top:6px">Uses the title + caption above. Vertical 9:16 recommended.</div>
+      <div class="upstatus muted"></div>`;
+    const btn = igBox.querySelector('[data-up]'), st = igBox.querySelector('.upstatus');
+    btn.onclick = async () => {
+      btn.disabled = true; st.className = 'upstatus muted';
+      st.innerHTML = '<span class="spin" style="display:inline-block;vertical-align:-2px"></span> Uploading Reel… (can take a minute)';
+      try {
+        const caption = [titleEl.value, descEl.value].filter(Boolean).join('\n\n');
+        const res = await fetch('/api/instagram/upload', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ job_id: jobId, file: fileEl.value, caption }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Upload failed');
+        st.className = 'upstatus ok';
+        st.innerHTML = `Posted → <a href="${data.url}" target="_blank" rel="noopener" style="color:var(--ok)">${data.url}</a>`;
+      } catch (e) { st.className = 'upstatus err'; st.textContent = e.message; }
+      finally { btn.disabled = false; }
+    };
+  }
+
+  return el;
+}
+
+function toggleHashtag(descEl, tag, chipEl){
+  const has = descEl.value.includes(tag);
+  if (has) {
+    descEl.value = descEl.value.replace(new RegExp('\\s*' + tag.replace(/[#]/g,'\\#') + '(?![\\w])', 'g'), '').trim();
+    chipEl.classList.remove('on');
+  } else {
+    descEl.value = (descEl.value.trimEnd() + ' ' + tag).trim();
+    chipEl.classList.add('on');
+  }
+}
+
+/* ── helpers ─────────────────────────────────────────── */
+function fmt(s){ s=Math.floor(s); return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+function viralBadge(c){
+  if (c.virality == null) return '';
+  const v = c.virality;
+  const cls = v >= 75 ? 'hi' : v >= 50 ? 'mid' : 'lo';
+  const r = c.virality_reason ? ` title="${escAttr(c.virality_reason)}"` : '';
+  return `<div class="viral ${cls}"${r}>
+    <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 3 3 6a8 8 0 1 1-15-3c2 2 3 1 3-1 0-2 2-3 3-4Z"/></svg>
+    <b>${v}</b><span>viral score</span></div>`;
+}
+const _POWER = ['secret','truth','never','why','how','stop','mistake','nobody','actually','insane','shocking','proven','instantly','finally','real'];
+function heuristicScore(t){
+  t = t.trim(); const n = t.length; let score = 5; const reasons = [];
+  if (n >= 40 && n <= 70) { score += 2; reasons.push('strong length'); }
+  else if (n < 25) { score -= 1; reasons.push('a bit short'); }
+  else if (n > 85) { score -= 1; reasons.push('too long'); }
+  if (/\d/.test(t)) { score += 1; reasons.push('has a number'); }
+  if (t.includes('?')) { score += 1; reasons.push('question hook'); }
+  if (_POWER.some(w => t.toLowerCase().includes(w))) { score += 1; reasons.push('power word'); }
+  if (/[\u{1F000}-\u{1FAFF}☀-➿]/u.test(t)) reasons.push('emoji');
+  score = Math.max(1, Math.min(10, score));
+  return { score, cls: score >= 8 ? 'hi' : score >= 5 ? 'mid' : 'lo', reason: reasons.join(', ') || 'decent hook' };
+}
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
+
+refreshAccount();
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review queue · Option B: Inbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  body{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  .qb-sub{border-bottom:1px solid var(--border)}
+  .qb-sub-in{max-width:1440px;margin:0 auto;padding:0 28px;display:flex;gap:2px}
+  .qb-sub a{padding:10px 14px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;
+    border-bottom:2px solid transparent;margin-bottom:-1px}
+  .qb-sub a[aria-current]{color:var(--ink);border-bottom-color:var(--terra-hover)}
+  .qb-main{flex:1;min-height:0;display:grid;grid-template-columns:372px minmax(0,1fr);width:100%;max-width:1440px;margin:0 auto}
+  .qb-list{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--border)}
+  .qb-list-head{padding:16px 18px 10px 28px}
+  .qb-list-head h1{font-family:'Fraunces',serif;font-weight:400;font-size:24px;letter-spacing:-.02em;margin:0 0 10px}
+  .qb-list-head h1 em{color:var(--terra-ink)}
+  .qb-scroll{flex:1;overflow:auto;padding:0 12px 12px 18px}
+  .qb-day{display:flex;align-items:center;gap:8px;padding:12px 10px 6px;font-size:12px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.08em}
+  .qb-day input{margin-right:2px}
+  .qb-item{display:grid;grid-template-columns:16px 40px 28px minmax(0,1fr) 10px;gap:10px;align-items:center;
+    padding:8px 10px;border-radius:10px;border:1px solid transparent;content-visibility:auto;contain-intrinsic-size:auto 66px}
+  .qb-item + .qb-item{margin-top:2px}
+  .qb-item[aria-selected=true]{background:var(--white);border-color:var(--border);box-shadow:var(--shadow);
+    outline:2px solid var(--terra-hover);outline-offset:-2px}
+  .qb-item .t{font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+  .qb-item .w{min-width:0}
+  .qb-item .w b{display:block;font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qb-item .w span{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:11.5px}
+  .qb-item .w span svg{width:13px;height:13px}
+  .qb-st{width:9px;height:9px;border-radius:50%}
+  .st-ok{background:var(--ok-ink)} .st-wait{background:var(--terra-hover)} .st-hold{background:#D97706}
+  .st-err{background:var(--err-ink)} .st-up{background:transparent;border:2px solid var(--terra-hover)}
+  .qb-keys{display:flex;gap:10px;flex-wrap:nowrap;white-space:nowrap;padding:10px 12px 12px 28px;border-top:1px solid var(--border);font-size:11.5px;color:var(--muted)}
+  .qb-keys .mk-kbd + .mk-kbd{margin-left:2px}
+  .qb-detail{display:flex;flex-direction:column;min-height:0;background:var(--surface)}
+  .qb-detail-head{display:flex;align-items:center;gap:12px;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--white)}
+  .qb-detail-head .src{color:var(--muted);font-size:13px}
+  .qb-pos{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .qb-body{flex:1;overflow:auto;padding:22px 28px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:28px;align-items:start}
+  .qb-left{display:flex;flex-direction:column;gap:12px;position:sticky;top:0}
+  .qb-score{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--muted)}
+  .qb-score b{color:var(--ink)}
+  .qb-form{display:flex;flex-direction:column;gap:14px;max-width:760px}
+  .qb-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+  .qb-card h3{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .qb-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  .qb-tags{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-height:38px}
+  .qb-tag{background:var(--white);border:1px solid var(--border);border-radius:999px;padding:1px 9px;font-size:12px}
+  .qb-actions{display:flex;align-items:center;gap:10px;padding:12px 28px;border-top:1px solid var(--border);background:var(--white)}
+  .qb-actions .mk-kbd{margin-left:4px;background:transparent;border-color:rgba(255,255,255,.45);color:inherit}
+  .qb-actions .mk-btn.danger .mk-kbd,.qb-actions .mk-btn.ghost .mk-kbd{border-color:var(--border)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-yt" viewBox="0 0 24 24"><rect x="1.5" y="5" width="21" height="14" rx="4" fill="#FF0033"/><path d="M10 9.2v5.6l4.8-2.8z" fill="#fff"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#E1306C" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#E1306C"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></symbol>
+  <symbol id="i-hold" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></symbol>
+  <symbol id="i-cut" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+</svg>
+
+<header class="mk-nav"><div class="mk-nav-in" style="max-width:1440px">
+  <div class="mk-brand"><span class="mk-logo"><svg class="mk-icon"><use href="#i-cut"/></svg></span>Clip Maker</div>
+  <nav class="mk-tabs" aria-label="Main"><a class="mk-tab" href="#">Create</a><a class="mk-tab" href="#">Library</a><a class="mk-tab" href="#" aria-current="page">Autopilot</a></nav>
+  <span class="mk-spacer"></span>
+  <span class="mk-counts" role="status"><span class="lab">Autopilot</span><span><span class="n">5</span> to approve</span><span class="bad"><span class="n">1</span> failed</span></span>
+  <button class="mk-pause" role="switch" aria-checked="false"><span class="mk-sw" aria-hidden="true"></span>Pause all publishing</button>
+</div></header>
+<nav class="qb-sub" aria-label="Autopilot"><div class="qb-sub-in">
+  <a href="#" aria-current="page">Queue</a><a href="#">Sources</a><a href="#">History</a><a href="#">Activity</a><a href="#">Profiles</a><a href="#">Setup</a>
+</div></nav>
+
+<main class="qb-main">
+  <section class="qb-list" aria-label="Posts">
+    <div class="qb-list-head">
+      <h1>Review <em>queue</em></h1>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="mk-seg" role="group" aria-label="Show"><button aria-pressed="false">Needs you · 7</button><button aria-pressed="true">All · 11</button></div>
+        <button class="mk-btn ghost icon" aria-label="YouTube only" aria-pressed="false"><svg class="mk-icon"><use href="#i-yt"/></svg></button>
+        <button class="mk-btn ghost icon" aria-label="Instagram only" aria-pressed="false"><svg class="mk-icon"><use href="#i-ig"/></svg></button>
+        <span class="mk-spacer"></span><button class="mk-link" style="white-space:nowrap">By video…</button>
+      </div>
+    </div>
+    <div class="qb-scroll" role="listbox" aria-label="Posts by day">
+      <div class="qb-day"><input type="checkbox" aria-label="Select Saturday 17 October">Today · Sat 17 Oct</div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">13:00</span><div class="mk-cover g1" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Your first 1,000 followers are the hardest 👇</b><span><svg><use href="#i-ig"/></svg>Approved</span></div><span class="qb-st st-ok" title="Approved"></span></div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">17:00</span><div class="mk-cover g1" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Why your first 1,000 followers are the hardest</b><span><svg><use href="#i-yt"/></svg>Uploaded · public at 17:00</span></div><span class="qb-st st-up" title="Uploaded"></span></div>
+      <div class="qb-item" role="option" aria-selected="true"><input type="checkbox" aria-label="Select"><span class="t">19:00</span><div class="mk-cover g3" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Stop chasing viral. Do this instead.</b><span><svg><use href="#i-yt"/></svg>Held · may be sensitive</span></div><span class="qb-st st-hold" title="Held"></span></div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">21:00</span><div class="mk-cover g3" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Stop chasing viral 🚫 Do this instead.</b><span><svg><use href="#i-ig"/></svg>Waiting for approval</span></div><span class="qb-st st-wait" title="Waiting for approval"></span></div>
+      <div class="qb-day"><input type="checkbox" aria-label="Select Sunday 18 October">Tomorrow · Sun 18 Oct</div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">11:00</span><div class="mk-cover g2" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Mera pehla brand deal kaise mila</b><span><svg><use href="#i-yt"/></svg>Held · Hindi captions</span></div><span class="qb-st st-hold" title="Held"></span></div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">15:00</span><div class="mk-cover g2" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Pehla brand deal 🤝 kaise mila? #creators</b><span><svg><use href="#i-ig"/></svg>Waiting for approval</span></div><span class="qb-st st-wait" title="Waiting for approval"></span></div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">18:00</span><div class="mk-cover g5" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Jaipur in 60 seconds</b><span><svg><use href="#i-yt"/></svg>Blocked · too long for Shorts</span></div><span class="qb-st st-err" title="Blocked"></span></div>
+      <div class="qb-day"><input type="checkbox" aria-label="Select Monday 19 October">Mon 19 Oct</div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">13:00</span><div class="mk-cover g5" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>Jaipur in 60 seconds 🌸 #travel</b><span><svg><use href="#i-ig"/></svg>Waiting for approval</span></div><span class="qb-st st-wait" title="Waiting for approval"></span></div>
+      <div class="qb-item" role="option" aria-selected="false"><input type="checkbox" aria-label="Select"><span class="t">18:00</span><div class="mk-cover g6" style="width:28px"><div class="who"></div></div>
+        <div class="w"><b>The one habit that grew my channel</b><span><svg><use href="#i-yt"/></svg>Failed · no response</span></div><span class="qb-st st-err" title="Failed"></span></div>
+    </div>
+    <div class="qb-keys"><span><span class="mk-kbd">J</span><span class="mk-kbd">K</span> move</span><span><span class="mk-kbd">A</span> approve</span><span><span class="mk-kbd">R</span> reject</span><span><span class="mk-kbd">E</span> edit clip</span></div>
+  </section>
+
+  <section class="qb-detail" aria-label="Selected post">
+    <div class="qb-detail-head">
+      <span class="mk-plat" style="font-size:14px;font-weight:600"><svg><use href="#i-yt"/></svg>YouTube · Manish Clips</span>
+      <span class="mk-pill warn"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-hold"/></svg>Held · may be sensitive</span>
+      <span class="src">Creator Economy Podcast · Ep 42 · clip 3</span>
+      <span class="mk-spacer"></span>
+      <span class="qb-pos">3 of 11</span>
+      <button class="mk-btn ghost icon" aria-label="Previous post"><svg class="mk-icon"><use href="#i-left"/></svg></button>
+      <button class="mk-btn ghost icon" aria-label="Next post"><svg class="mk-icon"><use href="#i-right"/></svg></button>
+    </div>
+    <div class="qb-body">
+      <div class="qb-left">
+        <div class="mk-cover g3" style="width:270px;border-radius:14px"><div class="who"></div><div class="cap" style="font-size:16px">Stop chasing viral. Do this instead</div><span class="play" style="width:58px;height:58px"><svg class="mk-icon fill lg"><use href="#i-play"/></svg></span></div>
+        <button class="mk-btn ghost"><svg class="mk-icon"><use href="#i-cut"/></svg>Edit clip</button>
+        <div class="qb-score"><span class="mk-score hi" style="margin-right:6px">84</span><b>Why this clip:</b> clear payoff at 0:38 and a strong opening line. 0:46 long.</div>
+      </div>
+      <div class="qb-form">
+        <div class="mk-callout warn" style="padding:12px 14px;font-size:13px"><svg class="mk-icon lg"><use href="#i-hold"/></svg><span><b>Held: the clip may be sensitive (financial claims).</b> The AI flagged "doubled my income in a month". It won't publish until you approve it.</span></div>
+        <div class="qb-card"><h3>When</h3>
+          <div class="qb-two">
+            <div class="mk-field"><div class="top"><label for="s1">Slot</label><span class="mk-count"><svg class="mk-icon" style="width:11px;height:11px;vertical-align:-1px"><use href="#i-lock"/></svg> You chose this time</span></div>
+              <input id="s1" class="mk-input" value="Sat 17 Oct 2026, 19:00 IST"></div>
+            <div class="mk-field"><div class="top"><label>Visibility</label></div>
+              <div class="mk-seg" role="group" aria-label="Visibility"><button aria-pressed="true">Public</button><button aria-pressed="false">Private</button></div></div>
+          </div>
+          <div class="mk-callout warn"><svg class="mk-icon"><use href="#i-alert"/></svg><span>Only <b>2 h</b> after the 17:00 YouTube post. Your minimum gap is 4 h. <button class="mk-link">Move to the next free slot (Sun 11:00)</button></span></div>
+        </div>
+        <div class="qb-card"><h3>Text</h3>
+          <div class="mk-field"><div class="top"><label for="t1">Title</label><span><button class="mk-link"><svg class="mk-icon" style="width:12px;height:12px;vertical-align:-2px"><use href="#i-reset"/></svg> Reset to AI version</button> · <span class="mk-count">36 / 100</span></span></div>
+            <input id="t1" class="mk-input edited" value="Stop chasing viral. Do this instead."></div>
+          <div class="mk-field"><div class="top"><label for="d1">Description</label><span class="mk-count">412 / 5,000 bytes</span></div>
+            <textarea id="d1" class="mk-input" rows="4">Most creators spend years chasing one viral video. In this clip from Ep 42, Riya explains why 50 steady posts beat one lucky hit, and what to measure instead.
+Full episode: youtube.com/@manishclips</textarea></div>
+          <div class="qb-two">
+            <div class="mk-field"><div class="top"><label>Tags</label><span class="mk-count">58 / 500</span></div>
+              <div class="mk-input qb-tags"><span class="qb-tag">creator tips</span><span class="qb-tag">growth</span><span class="qb-tag">youtube shorts</span><span class="qb-tag">podcast</span></div></div>
+            <div class="mk-field"><div class="top"><label for="c1">Category</label></div><select id="c1" class="mk-input"><option>People &amp; Blogs</option></select></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500"><input type="checkbox" checked> Label as AI-altered content</label>
+        </div>
+      </div>
+    </div>
+    <div class="qb-actions">
+      <button class="mk-btn danger">Reject <span class="mk-kbd">R</span></button>
+      <button class="mk-btn ghost"><svg class="mk-icon"><use href="#i-reset"/></svg>Reset all to AI</button>
+      <span class="mk-spacer"></span>
+      <span class="mk-count" style="font-size:12.5px"><svg class="mk-icon" style="width:13px;height:13px;vertical-align:-2px"><use href="#i-info"/></svg> Approving overrides the hold.</span>
+      <button class="mk-btn lg">Approve and next <span class="mk-kbd">A</span></button>
+    </div>
+  </section>
+</main>
+<div class="mk-tag" style="bottom:80px">Queue · Option B <span>Inbox: one post at a time, keyboard first</span></div>
+</body>
+</html>

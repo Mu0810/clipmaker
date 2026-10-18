@@ -1,0 +1,28 @@
+# Your data and sign-ins: never committed.
+clipmaker.db*
+output/
+music/*
+!music/README.md
+client_secret.json
+token.json
+ig_session.json
+ig_account.json
+yt_pw_profile/
+yt_pw_account.json
+llm_config.json
+monetize_config.json
+meta_app.json
+meta_token.json
+
+# Downloaded or generated.
+.venv/
+models/*.onnx
+.attic/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local tool settings.
+.claude/
+.kiro/settings/
+.DS_Store

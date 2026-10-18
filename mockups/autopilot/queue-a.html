@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review queue · Option A: Agenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  .qa-sub{border-bottom:1px solid var(--border)}
+  .qa-sub-in{max-width:1360px;margin:0 auto;padding:0 28px;display:flex;gap:2px}
+  .qa-sub a{padding:10px 14px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;
+    border-bottom:2px solid transparent;margin-bottom:-1px}
+  .qa-sub a[aria-current]{color:var(--ink);border-bottom-color:var(--terra-hover)}
+  .qa-main{max-width:1360px;margin:0 auto;padding:20px 28px 96px}
+  .qa-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:14px}
+  .qa-head h1{font-family:'Fraunces',serif;font-weight:400;font-size:30px;letter-spacing:-.02em;margin:0}
+  .qa-head h1 em{color:var(--terra-ink)}
+  .qa-head p{margin:3px 0 0;color:var(--muted);font-size:13.5px}
+  .qa-tools{display:flex;align-items:center;gap:10px}
+  .qa-filters{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+  .qa-f{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--white);
+    border-radius:999px;padding:6px 13px;font-size:13px;font-weight:500;color:var(--ink)}
+  .qa-f .c{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .qa-f[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .qa-f[aria-pressed=true] .c{color:#E9E4DC}
+  .qa-day{margin-top:16px}
+  .qa-dayhead{display:flex;align-items:center;gap:12px;padding:8px 6px 8px 16px}
+  .qa-dayhead h2{margin:0;font-size:15px;font-weight:700}
+  .qa-dayhead h2 span{font-weight:400;color:var(--muted)}
+  .qa-quota{display:flex;gap:8px;margin-left:6px}
+  .qa-list{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .qa-row{display:grid;grid-template-columns:20px 58px 36px minmax(0,1fr) 158px 46px 186px 172px;align-items:center;
+    gap:14px;padding:9px 16px;border-top:1px solid var(--border);content-visibility:auto;contain-intrinsic-size:auto 82px}
+  .qa-row:first-child{border-top:0}
+  .qa-row.sel{background:#FFFBF7}
+  .qa-row.open{background:var(--surface)}
+  .qa-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+  .qa-time small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+  .qa-time .lock{color:var(--warn-ink);display:inline-flex;align-items:center;gap:3px;font-size:11px}
+  .qa-what{min-width:0}
+  .qa-what b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qa-what span{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qa-acts{display:flex;justify-content:flex-end;gap:6px}
+  .qa-edit{display:grid;grid-template-columns:150px minmax(0,1fr) 340px;gap:24px;padding:16px 16px 20px 108px;
+    background:var(--surface);border-top:1px dashed var(--border)}
+  .qa-edit .cov{display:flex;flex-direction:column;gap:10px}
+  .qa-fields{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:12px 16px;align-content:start}
+  .qa-fields .wide{grid-column:1/-1}
+  .qa-side{display:flex;flex-direction:column;gap:10px}
+  .qa-slot{display:flex;gap:8px}
+  .qa-slot .mk-input{flex:1}
+  .qa-tags{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-height:38px}
+  .qa-tag{background:var(--white);border:1px solid var(--border);border-radius:999px;padding:1px 9px;font-size:12px}
+  .qa-reason{font-size:12.5px;color:var(--muted)}
+  .qa-reason b{color:var(--ink)}
+  .qa-side .mk-btn{flex:1}
+  .qa-bulk{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:12px;
+    background:var(--ink);color:#fff;border-radius:999px;padding:7px 8px 7px 18px;box-shadow:var(--shadow-md);font-size:13px}
+  .qa-bulk .mk-btn.ghost{background:transparent;color:#fff;border-color:#4A504C}
+  .qa-note{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-yt" viewBox="0 0 24 24"><rect x="1.5" y="5" width="21" height="14" rx="4" fill="#FF0033"/><path d="M10 9.2v5.6l4.8-2.8z" fill="#fff"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#E1306C" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#E1306C"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></symbol>
+  <symbol id="i-hold" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></symbol>
+  <symbol id="i-cut" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+</svg>
+
+<header class="mk-nav"><div class="mk-nav-in">
+  <div class="mk-brand"><span class="mk-logo"><svg class="mk-icon"><use href="#i-cut"/></svg></span>Clip Maker</div>
+  <nav class="mk-tabs" aria-label="Main"><a class="mk-tab" href="#">Create</a><a class="mk-tab" href="#">Library</a><a class="mk-tab" href="#" aria-current="page">Autopilot</a></nav>
+  <span class="mk-spacer"></span>
+  <span class="mk-counts" role="status"><span class="lab">Autopilot</span><span><span class="n">5</span> to approve</span><span class="bad"><span class="n">1</span> failed</span></span>
+  <button class="mk-pause" role="switch" aria-checked="false"><span class="mk-sw" aria-hidden="true"></span>Pause all publishing</button>
+</div></header>
+<nav class="qa-sub" aria-label="Autopilot"><div class="qa-sub-in">
+  <a href="#" aria-current="page">Queue</a><a href="#">Sources</a><a href="#">History</a><a href="#">Activity</a><a href="#">Profiles</a><a href="#">Setup</a>
+</div></nav>
+
+<main class="qa-main">
+  <div class="qa-head">
+    <div><h1>Review <em>queue</em></h1><p>11 upcoming posts from 2 videos · times in India Standard Time (Asia/Kolkata)</p></div>
+    <div class="qa-tools">
+      <div class="mk-seg" role="group" aria-label="Platform"><button aria-pressed="true">Both</button><button aria-pressed="false">YouTube</button><button aria-pressed="false">Instagram</button></div>
+      <button class="mk-btn ghost sm">Select all from a video…</button>
+    </div>
+  </div>
+  <div class="qa-filters" role="group" aria-label="Show">
+    <button class="qa-f" aria-pressed="true">All <span class="c">11</span></button>
+    <button class="qa-f" aria-pressed="false">Needs approval <span class="c">5</span></button>
+    <button class="qa-f" aria-pressed="false">Held <span class="c">2</span></button>
+    <button class="qa-f" aria-pressed="false">Blocked <span class="c">1</span></button>
+    <button class="qa-f" aria-pressed="false">Failed <span class="c">1</span></button>
+    <span class="mk-spacer"></span>
+    <span class="qa-note"><svg class="mk-icon"><use href="#i-info"/></svg>Instagram posts go out only while Clip Maker is running.</span>
+  </div>
+
+  <section class="qa-day" aria-labelledby="d1">
+    <div class="qa-dayhead">
+      <input type="checkbox" aria-label="Select all posts on Saturday 17 October">
+      <h2 id="d1">Today <span>· Sat 17 Oct</span></h2>
+      <div class="qa-quota"><span class="mk-pill">YouTube 2 of 2</span><span class="mk-pill">Instagram 2 of 2</span></div>
+    </div>
+    <div class="qa-list">
+      <div class="qa-row">
+        <input type="checkbox" aria-label="Select">
+        <div class="qa-time">13:00<small>IST</small></div>
+        <div class="mk-cover g1 who-sm" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Your first 1,000 followers are the hardest 👇 #creatortips</b><span>Creator Economy Podcast · Ep 42 · clip 1</span></div>
+        <span class="mk-plat"><svg><use href="#i-ig"/></svg>@manish.makes</span>
+        <span class="mk-score hi" title="Strong hook in the first 3 s">91</span>
+        <span class="mk-pill ok"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-check"/></svg>Approved</span>
+        <div class="qa-acts"><button class="mk-btn ghost sm">Reject</button><button class="mk-btn quiet icon" aria-label="Open"><svg class="mk-icon"><use href="#i-down"/></svg></button></div>
+      </div>
+      <div class="qa-row">
+        <input type="checkbox" aria-label="Select">
+        <div class="qa-time">17:00<small>IST</small></div>
+        <div class="mk-cover g1" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Why your first 1,000 followers are the hardest</b><span>Creator Economy Podcast · Ep 42 · clip 1</span></div>
+        <span class="mk-plat"><svg><use href="#i-yt"/></svg>Manish Clips</span>
+        <span class="mk-score hi" title="Strong hook in the first 3 s">91</span>
+        <span class="mk-pill terra"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-clock"/></svg>Uploaded · public at 17:00</span>
+        <div class="qa-acts"><button class="mk-btn ghost sm">Reject</button><button class="mk-btn quiet icon" aria-label="Open"><svg class="mk-icon"><use href="#i-down"/></svg></button></div>
+      </div>
+      <div class="qa-row open sel">
+        <input type="checkbox" checked aria-label="Select">
+        <div class="qa-time">19:00<small class="lock"><svg class="mk-icon" style="width:11px;height:11px"><use href="#i-alert"/></svg>2 h gap</small></div>
+        <div class="mk-cover g3" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Stop chasing viral. Do this instead.</b><span>Creator Economy Podcast · Ep 42 · clip 3</span></div>
+        <span class="mk-plat"><svg><use href="#i-yt"/></svg>Manish Clips</span>
+        <span class="mk-score hi" title="Clear payoff at 0:38">84</span>
+        <span class="mk-pill warn"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-hold"/></svg>Held · may be sensitive</span>
+        <div class="qa-acts"><button class="mk-btn sm">Approve</button><button class="mk-btn quiet icon" aria-label="Close" aria-expanded="true"><svg class="mk-icon"><use href="#i-up"/></svg></button></div>
+      </div>
+      <div class="qa-edit" role="region" aria-label="Edit the YouTube post for clip 3">
+        <div class="cov">
+          <div class="mk-cover g3" style="width:150px"><div class="who"></div><div class="cap">Stop chasing viral. Do this instead</div><span class="play"><svg class="mk-icon fill"><use href="#i-play"/></svg></span></div>
+          <button class="mk-btn ghost sm"><svg class="mk-icon"><use href="#i-cut"/></svg>Edit clip</button>
+        </div>
+        <div class="qa-fields">
+          <div class="mk-field wide"><div class="top"><label for="t1">Title</label><span><button class="mk-link"><svg class="mk-icon" style="width:12px;height:12px;vertical-align:-2px"><use href="#i-reset"/></svg> Reset to AI version</button> · <span class="mk-count">36 / 100</span></span></div>
+            <input id="t1" class="mk-input edited" value="Stop chasing viral. Do this instead."></div>
+          <div class="mk-field wide"><div class="top"><label for="d1x">Description</label><span class="mk-count">412 / 5,000 bytes</span></div>
+            <textarea id="d1x" class="mk-input" rows="3">Most creators spend years chasing one viral video. In this clip from Ep 42, Riya explains why 50 steady posts beat one lucky hit, and what to measure instead.
+Full episode: youtube.com/@manishclips</textarea></div>
+          <div class="mk-field"><div class="top"><label>Tags</label><span class="mk-count">58 / 500</span></div>
+            <div class="mk-input qa-tags"><span class="qa-tag">creator tips</span><span class="qa-tag">growth</span><span class="qa-tag">youtube shorts</span><span class="qa-tag">podcast</span></div></div>
+          <div class="mk-field"><div class="top"><label for="c1">Category</label></div>
+            <select id="c1" class="mk-input"><option>People &amp; Blogs</option></select></div>
+          <div class="mk-field"><div class="top"><label>Visibility</label></div>
+            <div class="mk-seg" role="group" aria-label="Visibility"><button aria-pressed="true">Public</button><button aria-pressed="false">Private</button></div></div>
+          <label class="mk-field" style="flex-direction:row;align-items:center;gap:8px;font-size:12.5px;font-weight:500"><input type="checkbox" checked> Label as AI-altered content</label>
+        </div>
+        <div class="qa-side">
+          <div class="mk-field"><div class="top"><label for="s1">Slot</label><span class="mk-count"><svg class="mk-icon" style="width:11px;height:11px;vertical-align:-1px"><use href="#i-lock"/></svg> You chose this time</span></div>
+            <div class="qa-slot"><input id="s1" class="mk-input" value="Sat 17 Oct 2026, 19:00"><span class="mk-pill" style="align-self:center">IST</span></div></div>
+          <div class="mk-callout warn"><svg class="mk-icon"><use href="#i-alert"/></svg><span>Only <b>2 h</b> after the 17:00 YouTube post. Your minimum gap is 4 h.</span></div>
+          <div class="mk-callout warn"><svg class="mk-icon"><use href="#i-hold"/></svg><span><b>Held: may be sensitive (financial claims).</b> It won't publish until you approve it.</span></div>
+          <div class="qa-reason"><span class="mk-score hi" style="margin-right:6px">84</span><b>Why this clip:</b> clear payoff at 0:38 and a strong opening line.</div>
+          <div style="display:flex;gap:8px;margin-top:4px"><button class="mk-btn danger">Reject</button><button class="mk-btn">Approve anyway</button></div>
+        </div>
+      </div>
+      <div class="qa-row sel">
+        <input type="checkbox" checked aria-label="Select">
+        <div class="qa-time">21:00<small>IST</small></div>
+        <div class="mk-cover g3" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Stop chasing viral 🚫 Do this instead. #creatortips #growth</b><span>Creator Economy Podcast · Ep 42 · clip 3</span></div>
+        <span class="mk-plat"><svg><use href="#i-ig"/></svg>@manish.makes</span>
+        <span class="mk-score hi" title="Clear payoff at 0:38">84</span>
+        <span class="mk-pill terra">Waiting for approval</span>
+        <div class="qa-acts"><button class="mk-btn sm">Approve</button><button class="mk-btn quiet icon" aria-label="Open"><svg class="mk-icon"><use href="#i-down"/></svg></button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="qa-day" aria-labelledby="d2">
+    <div class="qa-dayhead">
+      <input type="checkbox" aria-label="Select all posts on Sunday 18 October">
+      <h2 id="d2">Tomorrow <span>· Sun 18 Oct</span></h2>
+      <div class="qa-quota"><span class="mk-pill">YouTube 2 of 2</span><span class="mk-pill">Instagram 1 of 2</span></div>
+    </div>
+    <div class="qa-list">
+      <div class="qa-row sel">
+        <input type="checkbox" checked aria-label="Select">
+        <div class="qa-time">11:00<small>IST</small></div>
+        <div class="mk-cover g2" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Mera pehla brand deal kaise mila</b><span>Creator Economy Podcast · Ep 42 · clip 2</span></div>
+        <span class="mk-plat"><svg><use href="#i-yt"/></svg>Manish Clips</span>
+        <span class="mk-score mid" title="Good story, slow start">72</span>
+        <span class="mk-pill warn"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-hold"/></svg>Held · Hindi captions</span>
+        <div class="qa-acts"><button class="mk-btn sm">Approve</button><button class="mk-btn quiet icon" aria-label="Open"><svg class="mk-icon"><use href="#i-down"/></svg></button></div>
+      </div>
+      <div class="qa-row">
+        <input type="checkbox" aria-label="Select">
+        <div class="qa-time">15:00<small>IST</small></div>
+        <div class="mk-cover g2" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Pehla brand deal 🤝 kaise mila? #creators</b><span>Creator Economy Podcast · Ep 42 · clip 2</span></div>
+        <span class="mk-plat"><svg><use href="#i-ig"/></svg>@manish.makes</span>
+        <span class="mk-score mid" title="Good story, slow start">72</span>
+        <span class="mk-pill terra">Waiting for approval</span>
+        <div class="qa-acts"><button class="mk-btn sm">Approve</button><button class="mk-btn quiet icon" aria-label="Open"><svg class="mk-icon"><use href="#i-down"/></svg></button></div>
+      </div>
+      <div class="qa-row">
+        <input type="checkbox" aria-label="Select">
+        <div class="qa-time">18:00<small>IST</small></div>
+        <div class="mk-cover g5" style="width:36px"><div class="who"></div></div>
+        <div class="qa-what"><b>Jaipur in 60 seconds</b><span>Weekend vlog: Jaipur · clip 1 · YouTube Shorts must be at most 3:00; this clip is 3:12.</span></div>
+        <span class="mk-plat"><svg><use href="#i-yt"/></svg>Manish Clips</span>
+        <span class="mk-score hi" title="Fast cuts, bright colour">88</span>
+        <span class="mk-pill err">Blocked · too long</span>
+        <div class="qa-acts"><button class="mk-btn ghost sm"><svg class="mk-icon"><use href="#i-cut"/></svg>Edit clip</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="qa-bulk" role="region" aria-label="Selected posts"><b>3 selected</b><span style="opacity:.75">from 2 days</span>
+  <button class="mk-btn ghost sm">Reject</button><button class="mk-btn sm">Approve 3</button></div>
+<div class="mk-tag">Queue · Option A <span>Agenda: every post by day, one opened inline</span></div>
+</body>
+</html>

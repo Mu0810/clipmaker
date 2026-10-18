@@ -1,0 +1,58 @@
+{
+  "decisions": [
+    {
+      "id": "publish-route",
+      "title": "How should Autopilot publish to YouTube and Instagram?",
+      "options": [
+        "Official APIs only (YouTube Data API + Meta Instagram API)",
+        "Also allow the existing unofficial methods (Studio browser bot, instagrapi login)"
+      ],
+      "recommended": "Official APIs only (YouTube Data API + Meta Instagram API)",
+      "answer": "Official APIs only (YouTube Data API + Meta Instagram API)"
+    },
+    {
+      "id": "source-intake",
+      "title": "Where do Autopilot's long videos come from?",
+      "options": [
+        "I submit them (YouTube URL, file, or a list of URLs)",
+        "Also watch my YouTube channel and clip new long videos automatically"
+      ],
+      "recommended": "I submit them (YouTube URL, file, or a list of URLs)",
+      "answer": "I submit them (YouTube URL, file, or a list of URLs)"
+    },
+    {
+      "id": "editor-scope",
+      "title": "How far should the clip editor go?",
+      "options": [
+        "Focused clip editor (trim, word cuts, captions, hook, reframe, cover, music)",
+        "Full multi-track timeline (b-roll, transitions, joining clips)"
+      ],
+      "recommended": "Focused clip editor (trim, word cuts, captions, hook, reframe, cover, music)",
+      "answer": "Focused clip editor (trim, word cuts, captions, hook, reframe, cover, music)"
+    },
+    {
+      "id": "queue-layout",
+      "title": "Which review queue layout should task 12.4 build?",
+      "options": [
+        "A · Agenda: every post by day, one opened inline, bulk approve",
+        "B · Inbox: a list on the left, one post at a time on the right"
+      ],
+      "recommended": "A · Agenda: every post by day, one opened inline, bulk approve",
+      "answer": "A · Agenda: every post by day, one opened inline, bulk approve"
+    },
+    {
+      "id": "editor-layout",
+      "title": "Which clip editor layout should task 12.6 build?",
+      "options": [
+        "A · Workbench: preview, transcript, settings and a full timeline at once",
+        "B · Script: edit the words like a document, preview docked on the right"
+      ],
+      "recommended": "B · Script: edit the words like a document, preview docked on the right",
+      "answer": "B · Script: edit the words like a document, preview docked on the right"
+    }
+  ],
+  "blocking": "All tasks done, and all of the usability review's decisions (design §15): six renames (Save as version N, Videos, Posted, Don't post, subtitles, Presets) and four features (Try again for a failed video, Requirement 1.10; Try again for a failed post, 10.10; posting-hour chips; language menus). 793 tests. Still open: the manual test with real YouTube and Instagram accounts, and N1.1, which needs a 60-minute source and Whisper small.",
+  "context": {
+    "template": "pipeline.py -> scheduler.py (today's process -> schedule -> upload flow)"
+  }
+}

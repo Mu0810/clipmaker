@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clip editor · Option A: Workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  body{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  .ea-top{display:flex;align-items:center;gap:10px;padding:9px 20px;background:var(--white);border-bottom:1px solid var(--border)}
+  .ea-title{min-width:0;margin-left:4px}
+  .ea-title b{display:block;font-family:'Fraunces',serif;font-weight:600;font-size:16px;white-space:nowrap}
+  .ea-title span{display:block;font-size:12px;color:var(--muted)}
+  .ea-sep{width:1px;height:26px;background:var(--border);margin:0 4px}
+  .ea-warn{display:flex;gap:6px}
+  .ea-body{flex:1;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr) 336px}
+  .ea-prev{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 22px;background:#EFEAE2;border-right:1px solid var(--border)}
+  .ea-frame{position:relative;height:min(640px,calc(100vh - 330px));aspect-ratio:9/16;border-radius:14px;overflow:hidden;
+    background:linear-gradient(170deg,#C27744 0%,#7B3816 62%,#3E1D0C 100%);box-shadow:var(--shadow-md)}
+  .ea-frame .who{position:absolute;inset:0}
+  .ea-frame .who::before{content:"";position:absolute;left:47%;top:30%;width:42%;aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:rgba(255,226,203,.9)}
+  .ea-frame .who::after{content:"";position:absolute;left:47%;top:58%;width:96%;height:60%;border-radius:46% 46% 0 0;transform:translateX(-50%);background:rgba(27,30,28,.82)}
+  .ea-badge{position:absolute;left:10px;top:10px;font-size:10.5px;font-weight:600;background:rgba(31,36,33,.72);color:#fff;border-radius:999px;padding:3px 9px}
+  .ea-hook{position:absolute;left:9%;right:9%;top:13%;text-align:center;font-weight:800;font-size:19px;line-height:1.1;color:#1F2421;
+    background:#fff;border-radius:8px;padding:7px 8px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+  .ea-capt{position:absolute;left:7%;right:7%;top:70%;text-align:center;font-weight:800;font-size:23px;line-height:1.15;color:#fff;
+    text-transform:uppercase;text-shadow:0 2px 0 #000,0 0 6px rgba(0,0,0,.6)}
+  .ea-capt em{font-style:normal;color:#FFD84D}
+  .ea-drag{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:11px;color:#fff;background:rgba(31,36,33,.6);
+    border-radius:999px;padding:3px 10px;white-space:nowrap}
+  .ea-ctl{display:flex;align-items:center;gap:10px;width:100%;justify-content:space-between}
+  .ea-time{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+  .ea-time span{color:var(--muted);font-weight:500}
+  .ea-tx{display:flex;flex-direction:column;min-height:0;background:var(--white)}
+  .ea-tx-head{display:flex;align-items:center;gap:10px;padding:12px 22px 8px}
+  .ea-tx-head h2{margin:0;font-size:14px;font-weight:700}
+  .ea-tx-head p{margin:0;font-size:12px;color:var(--muted)}
+  .ea-words{flex:1;overflow:auto;padding:4px 22px 18px;font-size:16px;line-height:2.05;color:var(--ink)}
+  .ea-words .wd{border-radius:4px;padding:1px 2px}
+  .ea-words .out{color:#6A706B}
+  .ea-words .cut{text-decoration:line-through;text-decoration-thickness:2px;color:var(--err-ink);background:var(--err-tint)}
+  .ea-words .sel{background:var(--terra-tint);box-shadow:0 0 0 1px #E2B998}
+  .ea-words .fix{text-decoration:underline dotted var(--terra-hover) 2px;text-underline-offset:4px}
+  .ea-words .now{background:#FFF1B8;box-shadow:0 0 0 1px #E8CC5A}
+  .ea-words .gap{display:inline-block;font-size:10.5px;line-height:16px;font-weight:600;color:var(--muted);background:var(--surface);
+    border:1px dashed #CFC7BA;border-radius:999px;padding:0 6px;vertical-align:2px}
+  .ea-mark{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:#fff;
+    background:var(--terra-hover);border-radius:4px;padding:1px 6px;vertical-align:2px;margin:0 3px}
+  .ea-panels{overflow:auto;border-left:1px solid var(--border);background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .ea-acc{background:var(--white);border:1px solid var(--border);border-radius:12px}
+  .ea-acc > button{width:100%;display:flex;align-items:center;gap:10px;background:none;border:0;padding:11px 14px;text-align:left}
+  .ea-acc > button b{font-size:13px}
+  .ea-acc > button span{margin-left:auto;font-size:12px;color:var(--muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ea-acc .in{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;font-size:12.5px}
+  .ea-sw{display:flex;align-items:center;gap:9px;font-weight:500}
+  .ea-posts{font-size:12.5px;display:flex;flex-direction:column;gap:7px}
+  .ea-posts .p{display:flex;align-items:center;gap:8px}
+  .ea-tl{flex:none;height:178px;border-top:1px solid var(--border);background:var(--white);padding:10px 22px 12px;display:flex;flex-direction:column;gap:6px}
+  .ea-tl-head{display:flex;align-items:center;gap:14px;font-size:12.5px}
+  .ea-tl-head b{font-variant-numeric:tabular-nums}
+  .ea-ruler{position:relative;height:16px;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .ea-ruler span{position:absolute;transform:translateX(-50%)}
+  .ea-track{position:relative;height:78px;border-radius:8px;background:#F4F0EA;overflow:visible}
+  .ea-wave{position:absolute;inset:0;overflow:hidden;border-radius:8px}
+  .ea-wave i{position:absolute;width:.22%;border-radius:2px;background:#9AA39D}
+  .ea-outside{position:absolute;top:0;bottom:0;background:rgba(31,36,33,.42);border-radius:8px}
+  .ea-inside{position:absolute;top:0;bottom:0;box-shadow:inset 0 0 0 2px var(--terra-hover)}
+  .ea-cutspan{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(180,35,24,.55) 0 4px,rgba(180,35,24,.18) 4px 8px)}
+  .ea-trim{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(92,99,93,.45) 0 3px,transparent 3px 7px)}
+  .ea-h{position:absolute;top:-8px;bottom:-8px;width:12px;margin-left:-6px;border-radius:5px;background:var(--terra-hover);
+    box-shadow:0 2px 6px rgba(169,78,34,.4);display:grid;place-items:center}
+  .ea-h::after{content:"";width:2px;height:22px;border-left:2px solid rgba(255,255,255,.7);border-right:2px solid rgba(255,255,255,.7);box-sizing:content-box;width:2px}
+  .ea-h .lab{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:700;color:var(--terra-ink);white-space:nowrap}
+  .ea-play{position:absolute;top:-10px;bottom:-4px;width:2px;background:var(--ink)}
+  .ea-play::before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top-color:var(--ink)}
+  .ea-ticks{position:relative;height:7px}
+  .ea-ticks i{position:absolute;top:0;width:1px;height:6px;background:#B7AFA3}
+  .ea-tl-foot{display:flex;gap:16px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-yt" viewBox="0 0 24 24"><rect x="1.5" y="5" width="21" height="14" rx="4" fill="#FF0033"/><path d="M10 9.2v5.6l4.8-2.8z" fill="#fff"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#E1306C" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#E1306C" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.2" fill="#E1306C"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 15h3M13 15h4M7 11h10"/></symbol>
+  <symbol id="i-hook" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h7"/></symbol>
+  <symbol id="i-crop" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></symbol>
+</svg>
+
+<div class="ea-top">
+  <button class="mk-btn ghost sm"><svg class="mk-icon"><use href="#i-back"/></svg>Queue</button>
+  <div class="ea-title"><b>Why your first 1,000 followers are the hardest</b><span>Creator Economy Podcast · Ep 42 · clip 1</span></div>
+  <span class="ea-sep"></span>
+  <button class="mk-btn ghost icon" aria-label="Undo (Cmd+Z)"><svg class="mk-icon"><use href="#i-undo"/></svg></button>
+  <button class="mk-btn ghost icon" aria-label="Redo (Shift+Cmd+Z)" disabled><svg class="mk-icon"><use href="#i-redo"/></svg></button>
+  <select class="mk-input" style="width:auto;padding:6px 30px 6px 10px;font-size:12.5px" aria-label="Version"><option>Version 2 · in use</option></select>
+  <span class="mk-spacer"></span>
+  <div class="ea-warn" role="status">
+    <span class="mk-pill"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-ig"/></svg>Instagram post is live and won't change</span>
+    <span class="mk-pill warn"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-alert"/></svg>YouTube video already uploaded</span>
+  </div>
+  <button class="mk-btn">Render version 3</button>
+</div>
+
+<div class="ea-body">
+  <section class="ea-prev" aria-label="Preview">
+    <div class="ea-frame"><div class="who"></div>
+      <span class="ea-badge">Preview · the final render may differ slightly</span>
+      <div class="ea-hook">Nobody tells you this</div>
+      <div class="ea-capt">nobody's <em>watching</em> yet</div>
+      <span class="ea-drag">⇆ Drag sideways to move the crop</span>
+    </div>
+    <div class="ea-ctl">
+      <button class="mk-btn icon" aria-label="Play"><svg class="mk-icon fill"><use href="#i-play"/></svg></button>
+      <span class="ea-time">0:08.6 <span>/ 0:34.5</span></span>
+      <div class="mk-seg" role="group" aria-label="Layout"><button aria-pressed="true">Fill</button><button aria-pressed="false">Fit</button></div>
+    </div>
+  </section>
+
+  <section class="ea-tx" aria-label="Transcript">
+    <div class="ea-tx-head"><h2>Transcript</h2><p>Shift-click to select words · <span class="mk-kbd">Delete</span> cuts them · double-click a word to correct it</p></div>
+    <div class="ea-words">
+      <span class="out">…and that's when I stopped looking at other people's numbers. Riya, you had the same thing, right? Yeah. Every creator I know went through a phase where they compared their day one to someone's year five. It's brutal, and it never helps. Okay, but the thing people ask me most is how long it took. Honestly? Longer than I'd like to admit, and I almost quit twice. So here's what I tell everyone now.</span>
+      <span class="ea-mark">IN 1:12:04.2</span>Your first thousand followers are the hardest.
+      <span class="wd sel">Not because you're bad,</span> but because nobody's <span class="wd now">watching</span> yet.
+      <span class="wd cut">Um,</span> so you post into silence for, <span class="wd cut">like,</span> months. <span class="gap">pause 0.8 s · trimmed</span>
+      And that silence is the test. The creators who make it are the ones who keep posting when the numbers say zero.
+      <span class="gap">pause 0.6 s · trimmed</span> I posted every day for <span class="wd fix" title="Whisper wrote: one ninety">190</span> days before a single video crossed a thousand views.
+      <span class="ea-mark">OUT 1:12:41.0</span>
+      <span class="out">And then, weirdly, everything changed in one week. A clip about my morning routine, of all things, got picked up and I woke up to forty thousand views. Forty thousand. I didn't even like that video. But it didn't matter, because by then I had a hundred and ninety other videos for those people to find, and that's what turned a lucky week into a channel. So if you're in the silent part right now, that's normal. Keep the archive growing.</span>
+    </div>
+  </section>
+
+  <aside class="ea-panels" aria-label="Clip settings">
+    <div class="ea-acc"><button aria-expanded="true"><svg class="mk-icon"><use href="#i-cc"/></svg><b>Captions</b><span>Word by word</span></button>
+      <div class="in">
+        <label class="ea-sw"><span class="mk-sw on" aria-hidden="true"></span>Burn captions into the video</label>
+        <div class="mk-seg" role="group" aria-label="Caption style"><button aria-pressed="true">Word by word</button><button aria-pressed="false">Phrases</button><button aria-pressed="false">Karaoke</button></div>
+        <span style="color:var(--muted)">1 word corrected: "one ninety" → "190".</span>
+      </div></div>
+    <div class="ea-acc"><button aria-expanded="false"><svg class="mk-icon"><use href="#i-hook"/></svg><b>Hook</b><span>"Nobody tells you this"</span></button></div>
+    <div class="ea-acc"><button aria-expanded="false"><svg class="mk-icon"><use href="#i-crop"/></svg><b>Layout</b><span>Fill · crop follows the face</span></button></div>
+    <div class="ea-acc"><button aria-expanded="false"><svg class="mk-icon"><use href="#i-music"/></svg><b>Music</b><span>None</span></button></div>
+    <div class="ea-acc"><button aria-expanded="false"><svg class="mk-icon"><use href="#i-img"/></svg><b>Cover</b><span>0:03.2 · auto</span></button></div>
+    <div class="ea-acc"><div class="in" style="padding-top:12px">
+      <span class="mk-label">This clip's posts</span>
+      <div class="ea-posts">
+        <div class="p"><svg class="mk-icon"><use href="#i-ig"/></svg>Instagram · live since 13:00 · won't change</div>
+        <div class="p"><svg class="mk-icon"><use href="#i-yt"/></svg>YouTube · uploaded, public at 17:00</div>
+        <label class="p" style="font-weight:500;padding-left:24px"><input type="checkbox"> Replace the YouTube upload with version 3</label>
+      </div></div></div>
+  </aside>
+</div>
+
+<section class="ea-tl" aria-label="Timeline">
+  <div class="ea-tl-head"><b>Clip 34.5 s</b><span style="color:var(--muted)">36.8 s between the handles, minus 0.9 s of cuts and 1.4 s of trimmed pauses</span>
+    <span class="mk-pill ok"><svg class="mk-icon" style="width:12px;height:12px"><use href="#i-check"/></svg>Fits Shorts and Reels</span>
+    <span class="mk-spacer"></span><span style="color:var(--muted)">Showing 1:11:04 – 1:13:41 of the source</span></div>
+  <div class="ea-ruler"><span style="left:16.5%">1:11:30</span><span style="left:35.6%">1:12:00</span><span style="left:54.7%">1:12:30</span><span style="left:73.9%">1:13:00</span><span style="left:93%">1:13:30</span></div>
+  <div class="ea-track">
+    <div class="ea-wave" id="wave"></div>
+    <div class="ea-outside" style="left:0;width:38.3%"></div>
+    <div class="ea-outside" style="left:61.7%;right:0"></div>
+    <div class="ea-inside" style="left:38.3%;width:23.4%"></div>
+    <div class="ea-cutspan" style="left:41.8%;width:.4%"></div>
+    <div class="ea-cutspan" style="left:43.9%;width:.3%"></div>
+    <div class="ea-trim" style="left:49.3%;width:.5%"></div>
+    <div class="ea-trim" style="left:54.7%;width:.4%"></div>
+    <div class="ea-h" style="left:38.3%" role="slider" aria-label="In point" aria-valuetext="1:12:04.2" tabindex="0"><span class="lab">IN</span></div>
+    <div class="ea-h" style="left:61.7%" role="slider" aria-label="Out point" aria-valuetext="1:12:41.0" tabindex="0"><span class="lab">OUT</span></div>
+    <div class="ea-play" style="left:45.5%"></div>
+  </div>
+  <div class="ea-ticks" id="ticks"></div>
+  <div class="ea-tl-foot"><span><span class="mk-kbd">←</span> <span class="mk-kbd">→</span> move a handle 0.1 s · with <span class="mk-kbd">Shift</span> 1 s</span>
+    <span><span class="mk-kbd">Space</span> play</span><span>Hatched red: cut words · grey stripes: trimmed pauses</span></div>
+</section>
+<div class="mk-tag" style="bottom:196px">Editor · Option A <span>Workbench: everything visible at once</span></div>
+<script>
+  // Decoration only: a seeded waveform and word ticks for the mockup.
+  let seed = 11;
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const quiet = [[0.493, 0.498], [0.547, 0.551], [0.203, 0.214], [0.71, 0.722]];
+  let bars = "", ticks = "";
+  for (let i = 0; i < 300; i++) {
+    const x = i / 300, still = quiet.some(([a, b]) => x >= a - 0.004 && x <= b + 0.004);
+    const h = still ? 4 + rnd() * 4 : 18 + rnd() * 62 * (0.6 + 0.4 * Math.sin(i / 7));
+    bars += `<i style="left:${(x * 100).toFixed(2)}%;top:${(50 - h / 2).toFixed(1)}%;height:${h.toFixed(1)}%"></i>`;
+    if (!still && i % 2 === 0 && rnd() > 0.35) ticks += `<i style="left:${(x * 100).toFixed(2)}%"></i>`;
+  }
+  document.getElementById("wave").innerHTML = bars;
+  document.getElementById("ticks").innerHTML = ticks;
+</script>
+</body>
+</html>
